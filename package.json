@@ -24,10 +24,25 @@
       "audio-explorer-sidebar": [
         {
           "id": "audio-explorer-sidebar",
-          "name": "Audio Recorder",
+          "name": "Audio Explorer",
           "visibility": "visible",
           "icon": "$(mic)"
+        },
+        {
+          "id": "audio-explorer-sidebar-navigation",
+          "name": "Audio Navigation",
+          "visibility": "visible",
+          "icon": "$(mic)",
+          "contextualTitle": "Audio Navigation"
+        },
+        {
+          "id": "audio-explorer-sidebar-options",
+          "name": "Audio Utils",
+          "visibility": "visible",
+          "icon": "$(mic)",
+          "contextualTitle": "Audio Utils"
         }
+        
       ]
     },
     "viewsContainers": {

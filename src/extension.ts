@@ -190,9 +190,9 @@ export function activate(context: vscode.ExtensionContext) {
                   result,
                 });
 
-                vscode.commands.executeCommand(
-                  "scribe-audio.initNewAudioProject"
-                );
+                // vscode.commands.executeCommand(
+                //   "scribe-audio.initNewAudioProject"
+                // );
               } else {
                 vscode.commands.executeCommand("workbench.action.quit");
               }
