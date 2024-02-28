@@ -3,6 +3,7 @@
   "displayName": "scribe-audio",
   "description": "",
   "version": "0.0.1",
+  "publisher": "scribe",
   "engines": {
     "node": ">=18.17.0",
     "vscode": "^1.86.0"

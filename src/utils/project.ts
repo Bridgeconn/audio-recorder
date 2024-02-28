@@ -6,6 +6,9 @@ import packageInfo from "../../package.json";
 import { v5 as uuidv5 } from "uuid";
 import { environment } from "../environment";
 import moment from "moment";
+import { schemes } from "./versification";
+
+import * as path from "path";
 
 /**
  * Function use vscode native input collection and get project details
@@ -80,6 +83,21 @@ export async function promptAndCollectProjectDetails(): Promise<
   );
   if (!targetLanguage) return;
 
+  // versification picker
+  const versificationPicker = await vscode.window.showQuickPick(
+    schemes.map(({ name }) => name),
+    {
+      placeHolder: "Select one versification Scheme",
+    }
+  );
+
+  if (!versificationPicker) return;
+
+  const versification = schemes.find(
+    ({ name }) => name === versificationPicker
+  );
+  if (!targetLanguage) return;
+
   return {
     projectName,
     projectFlavour,
@@ -87,6 +105,7 @@ export async function promptAndCollectProjectDetails(): Promise<
     abbreviation,
     sourceLanguage,
     targetLanguage,
+    versification,
   };
 }
 
@@ -122,6 +141,7 @@ export async function createNewAudioProject(
     abbreviation,
     sourceLanguage,
     targetLanguage,
+    versification,
   } = proejctInputs;
 
   // generate a project id
@@ -248,11 +268,40 @@ export async function createNewAudioProject(
     "utf8"
   );
 
+  // do not create if no versification
+  if (!versification?.file) return;
+
+  console.log(
+    "lib path : --------> ",
+    vscode.Uri.file(`../lib/versifications/${versification.file}`),
+    vscode.extensions.getExtension("scribe.scribe-audio")?.extensionPath
+  );
+
+  const extensionPath = vscode.extensions.getExtension(
+    `${packageInfo.publisher}.${packageInfo.name}`
+  )?.extensionPath as string;
+  const versificationPath = path.join(
+    extensionPath,
+    "src",
+    "lib",
+    "versifications",
+    versification.file
+  );
+
+  // write files - metadata , folders , versification
   vscode.workspace.fs.writeFile(projectMetadataPath, projectFileData).then(() =>
     vscode.workspace.fs.createDirectory(audioContentDirPath).then(() => {
-      vscode.window.showInformationMessage(
-        `Project created at ${projectMetadataPath.fsPath}`
-      );
+      // if dir created successfully, move versification json to project dir
+      vscode.workspace.fs
+        .copy(
+          vscode.Uri.file(versificationPath),
+          vscode.Uri.joinPath(audioContentDirPath, "versification.json")
+        )
+        .then(() => {
+          vscode.window.showInformationMessage(
+            `Project created at ${WORKSPACE_FOLDER.uri}`
+          );
+        });
     })
   );
 
