@@ -23,6 +23,8 @@ export class AudioPanel {
         </head>
         <body>
           <h1>Welcome to Scribe Audio</h1>
+          <vscode-button id="howdy">Howdy!</vscode-button>
+          <button onclick="testFunc()">My Button</button>
         </body>
       </html>
     `;
