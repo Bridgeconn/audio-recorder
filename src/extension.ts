@@ -16,41 +16,41 @@ const ROOT_PATH = getWorkSpaceFolder();
 console.log("Root Path =========>", ROOT_PATH);
 
 // prompt for select folder / get metadata from the opened dir
-if (!ROOT_PATH) {
-  vscode.window
-    .showInformationMessage(
-      "No Audio Burrito project found. You need to select a Audio Burrito project folder for your new project, or open an existing Audio Burrito project folder.",
-      { modal: true },
-      "Select a Folder"
-    )
-    .then(async (result) => {
-      if (result === "Select a Folder") {
-        const workspaceFolder = await openWorkspace();
-        console.log("reached till here --------------", {
-          workspaceFolder,
-          result,
-        });
+// if (!ROOT_PATH) {
+//   vscode.window
+//     .showInformationMessage(
+//       "No Audio Burrito project found. You need to select a Audio Burrito project folder for your new project, or open an existing Audio Burrito project folder.",
+//       { modal: true },
+//       "Select a Folder"
+//     )
+//     .then(async (result) => {
+//       if (result === "Select a Folder") {
+//         const workspaceFolder = await openWorkspace();
+//         console.log("reached till here --------------", {
+//           workspaceFolder,
+//           result,
+//         });
 
-        vscode.commands.executeCommand("scribe-audio.initNewAudioProject");
-      } else {
-        vscode.commands.executeCommand("workbench.action.quit");
-      }
-    });
-} else {
-  // TODO : FIx this ele part - not redirecting via code
-  const metadataPath = path.join(ROOT_PATH, "metadata.json");
-  (async () => {
-    const metaUrl = await vscode.Uri.file(metadataPath);
-    const metaFileStat = await vscode.workspace.fs.stat(metaUrl);
-    console.log("in await ===> ", metaUrl, metaFileStat);
-    console.log("in else path - where folder is opened ====> ", metadataPath);
-    if (!vscode.workspace.fs.stat(vscode.Uri.file(metadataPath))) {
-      vscode.commands.executeCommand("scribe-audio.initNewAudioProject");
-    } else {
-      console.log("Metadata exist in the opened folder ======");
-    }
-  })();
-}
+//         vscode.commands.executeCommand("scribe-audio.initNewAudioProject");
+//       } else {
+//         vscode.commands.executeCommand("workbench.action.quit");
+//       }
+//     });
+// } else {
+//   // TODO : FIx this ele part - not redirecting via code
+//   const metadataPath = path.join(ROOT_PATH, "metadata.json");
+//   (async () => {
+//     const metaUrl = await vscode.Uri.file(metadataPath);
+//     const metaFileStat = await vscode.workspace.fs.stat(metaUrl);
+//     console.log("in await ===> ", metaUrl, metaFileStat);
+//     console.log("in else path - where folder is opened ====> ", metadataPath);
+//     if (!vscode.workspace.fs.stat(vscode.Uri.file(metadataPath))) {
+//       vscode.commands.executeCommand("scribe-audio.initNewAudioProject");
+//     } else {
+//       console.log("Metadata exist in the opened folder ======");
+//     }
+//   })();
+// }
 
 // This method is called when your extension is activated
 // Your extension is activated the very first time the command is executed
@@ -162,6 +162,41 @@ export function activate(context: vscode.ExtensionContext) {
           vscode.window.showErrorMessage(
             `Failed to initialize Audio project: ${err}`
           );
+        }
+      }
+    )
+  );
+
+  /**
+   * Register new project creation - button click
+   */
+  context.subscriptions.push(
+    vscode.commands.registerCommand(
+      "scribe-audio.createNewProjectBtnClick",
+      async () => {
+        console.log("BUtton Clicked");
+        if (!ROOT_PATH) {
+          vscode.window
+            .showInformationMessage(
+              "No Audio Burrito project found. You need to select a Audio Burrito project folder for your new project, or open an existing Audio Burrito project folder.",
+              { modal: true },
+              "Select a Folder"
+            )
+            .then(async (result) => {
+              if (result === "Select a Folder") {
+                const workspaceFolder = await openWorkspace();
+                console.log("reached till here --------------", {
+                  workspaceFolder,
+                  result,
+                });
+
+                vscode.commands.executeCommand(
+                  "scribe-audio.initNewAudioProject"
+                );
+              } else {
+                vscode.commands.executeCommand("workbench.action.quit");
+              }
+            });
         }
       }
     )

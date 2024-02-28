@@ -113,9 +113,13 @@ export async function promptAndCollectProjectDetails(): Promise<
  *
  * Function to generate scope
  */
-async function generateProjectScope(): Promise<{ [key: string]: [] }> {
+async function generateProjectScope(): Promise<{ [key: string]: any[] }> {
   // TODO : Currently allow all books in scope
-  const currentScope = {};
+  const currentScope = {
+    GEN : [],
+    EXO : [],
+    LEV : []
+  };
 
   return currentScope;
 }
@@ -292,6 +296,7 @@ export async function createNewAudioProject(
   vscode.workspace.fs.writeFile(projectMetadataPath, projectFileData).then(() =>
     vscode.workspace.fs.createDirectory(audioContentDirPath).then(() => {
       // if dir created successfully, move versification json to project dir
+      // TODO : Need to add a check some in meta later
       vscode.workspace.fs
         .copy(
           vscode.Uri.file(versificationPath),

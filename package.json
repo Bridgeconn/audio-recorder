@@ -12,8 +12,42 @@
     "Other"
   ],
   "activationEvents": [],
-  "main": "./dist/extension.js",
+  "main": "./dist/extension.js", 
   "contributes": {
+    "viewsWelcome": [
+      {
+        "view": "audio-explorer-sidebar",
+        "contents": "Welcome to the Scribe Audio Recorder! Please setup a new Audio project by clicking the button below.\n\n[Create or Open Audio Project](command:scribe-audio.createNewProjectBtnClick)"
+      }
+    ],
+    "views": {
+      "audio-explorer-sidebar": [
+        {
+          "id": "audio-explorer-sidebar",
+          "name": "Audio Recorder",
+          "visibility": "visible",
+          "icon": "$(mic)"
+        }
+      ]
+    },
+    "viewsContainers": {
+      "activitybar": [
+        {
+          "id": "audio-explorer-sidebar",
+          "title": "Audio Recorder",
+          "icon": "$(mic)"
+        }
+      ]
+    },
+    "menus": {
+      "view/title": [
+        {
+          "command": "audio-explorer-sidebar.refreshEntry",
+          "when": "view == audio-explorer-sidebar",
+          "group": "navigation"
+        }
+      ]
+    },
     "commands": [
       {
         "command": "scribe-audio.scribeaudio",
@@ -23,7 +57,17 @@
         "title": "Start a new Audio Project",
         "shortTitle": "Start a new Audio Project",
         "command": "scribe-audio.initNewAudioProject"
+      },
+      {
+        "command": "audio-explorer-sidebar.refreshEntry",
+        "title": "Refresh",
+        "icon": "$(refresh)"
+      },
+      {
+        "command": "scribe-audio.createNewProjectBtnClick",
+        "title": "Init Audio Project Btn Invoke"
       }
+      
     ]
   },
   "scripts": {
