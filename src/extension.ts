@@ -9,6 +9,7 @@ import {
 } from "./utils/project";
 
 import * as path from "path";
+import { AudioEditorProvider, CustomEditorProvider } from "./webview/Editor/customEditor";
 
 // get root path of opened workspace in vscode
 const ROOT_PATH = getWorkSpaceFolder();
@@ -200,6 +201,31 @@ export function activate(context: vscode.ExtensionContext) {
         }
       }
     )
+  );
+
+  // TODO : Implement check for, is the opened folder metadata is of AUDIO (flavor check)
+
+  // ------------------------------------------------ Test place for custom Editor -----------------------------------------------
+
+  /**
+   * Custom Editor for .swav files
+   */  
+  context.subscriptions.push(AudioEditorProvider.register(context));
+  
+  // trigger on file create
+  context.subscriptions.push(
+    vscode.workspace.onDidCreateFiles((event) => {
+      event.files.forEach((file) => {
+        if (file.fsPath.toLocaleLowerCase().endsWith(".swav") ) {
+          // Open custom editor for .editor files
+          vscode.commands.executeCommand(
+            "vscode.openWith",
+            vscode.Uri.file(file.fsPath),
+            "scribe.scribeAudioEditor"
+          );
+        }
+      });
+    })
   );
 }
 

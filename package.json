@@ -12,8 +12,20 @@
     "Other"
   ],
   "activationEvents": [],
-  "main": "./dist/extension.js", 
+  "main": "./dist/extension.js",
   "contributes": {
+    "customEditors": [
+      {
+        "viewType": "scribe.scribeAudioEditor",
+        "displayName": "Scribe Audio Editor",
+        "selector": [
+          {
+            "filenamePattern": "*.swav"
+          }
+        ],
+        "priority": "default"
+      }
+    ],
     "viewsWelcome": [
       {
         "view": "audio-explorer-sidebar",
@@ -42,7 +54,6 @@
           "icon": "$(mic)",
           "contextualTitle": "Audio Utils"
         }
-        
       ]
     },
     "viewsContainers": {
@@ -61,7 +72,8 @@
           "when": "view == audio-explorer-sidebar",
           "group": "navigation"
         }
-      ]
+      ],
+      "commandPalette": []
     },
     "commands": [
       {
@@ -82,7 +94,6 @@
         "command": "scribe-audio.createNewProjectBtnClick",
         "title": "Init Audio Project Btn Invoke"
       }
-      
     ]
   },
   "scripts": {
