@@ -13,4 +13,5 @@ export interface AudioProjectCreationDetails {
   sourceLanguage: LanguageMetadataType;
   targetLanguage: LanguageMetadataType;
   versification: versification | undefined;
+  currentScope: string;
 }

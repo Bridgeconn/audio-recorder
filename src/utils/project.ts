@@ -7,6 +7,7 @@ import { v5 as uuidv5 } from "uuid";
 import { environment } from "../environment";
 import moment from "moment";
 import { schemes } from "./versification";
+import { Bible } from "../types/versification";
 
 import * as path from "path";
 
@@ -25,13 +26,13 @@ export async function promptAndCollectProjectDetails(): Promise<
   const projectName = await vscode.window.showInputBox({
     prompt: "Enter the Audio project name",
   });
-  if (!projectName) return;
+  if (!projectName) {return;}
 
   // username prompt
   const userName = await vscode.window.showInputBox({
     prompt: "Enter your username",
   });
-  if (!userName) return;
+  if (!userName) {return;}
 
   // auto abbrevation
   const suggestedAbbr = projectName
@@ -58,13 +59,13 @@ export async function promptAndCollectProjectDetails(): Promise<
       placeHolder: "Select the source language",
     }
   );
-  if (!sourceLanguagePicker) return;
+  if (!sourceLanguagePicker) {return;}
 
   const sourceLanguage = languages.find(
     (lang: LanguageMetadataType) =>
       `${lang.refName} (${lang.tag})` === sourceLanguagePicker
   );
-  if (!sourceLanguage) return;
+  if (!sourceLanguage) {return;}
 
   // Target language quick picker ui (vs native)
   const targetLanguagePicker = await vscode.window.showQuickPick(
@@ -75,28 +76,41 @@ export async function promptAndCollectProjectDetails(): Promise<
       placeHolder: "Select the source language",
     }
   );
-  if (!targetLanguagePicker) return;
+  if (!targetLanguagePicker) {return;}
 
   const targetLanguage = languages.find(
     (lang: LanguageMetadataType) =>
       `${lang.refName} (${lang.tag})` === targetLanguagePicker
   );
-  if (!targetLanguage) return;
+  if (!targetLanguage) {return;}
+
+  // Select the scope 
+  const currentScope = await vscode.window.showQuickPick(
+    ['Full Bible', 'Old Testament', 'New Testament'],
+    { placeHolder: 'Select the scope of the project' },
+  );
+  console.log("currentScope",currentScope);
+  
+  if (!currentScope) {
+    return;
+  }
 
   // versification picker
   const versificationPicker = await vscode.window.showQuickPick(
-    schemes.map(({ name }) => name),
+    schemes.map(({ name }) => name.toUpperCase()),
     {
       placeHolder: "Select one versification Scheme",
     }
   );
+  console.log("versificationPicker",versificationPicker);
+  
+  if (!versificationPicker) {return;}
 
-  if (!versificationPicker) return;
-
+  // Select the versification
   const versification = schemes.find(
-    ({ name }) => name === versificationPicker
+    ({ name }) => name === versificationPicker.toLowerCase()
   );
-  if (!targetLanguage) return;
+  if (!versification) {return;}
 
   return {
     projectName,
@@ -106,6 +120,7 @@ export async function promptAndCollectProjectDetails(): Promise<
     sourceLanguage,
     targetLanguage,
     versification,
+    currentScope
   };
 }
 
@@ -113,15 +128,36 @@ export async function promptAndCollectProjectDetails(): Promise<
  *
  * Function to generate scope
  */
-async function generateProjectScope(): Promise<{ [key: string]: any[] }> {
+async function generateProjectScope(currentScope:string): Promise<{ [key: string]: any[] }> {
   // TODO : Currently allow all books in scope
-  const currentScope = {
-    GEN : [],
-    EXO : [],
-    LEV : []
-  };
+  console.log(currentScope);
+  console.log(Bible);
+  let selectedScope: {[key: string]: any} = {};
+  switch(currentScope){
+    case "Old Testament": {
+      Bible.OT.forEach((book)=>{
+        selectedScope[book] = [];
+      });
+      break;
+    }
+    case "New Testament": {
+      Bible.NT.forEach((book)=>{
+        selectedScope[book] = [];
+      });
+      break;
+    }
+    case "Full Bible": {
+      Bible.OT.forEach((book)=>{
+        selectedScope[book] = [];
+      });
+      Bible.NT.forEach((book)=>{
+        selectedScope[book] = [];
+      });
+      break;
+    }
+  }
 
-  return currentScope;
+  return selectedScope;
 }
 
 // function to generate scribe Id uuid
@@ -146,6 +182,7 @@ export async function createNewAudioProject(
     sourceLanguage,
     targetLanguage,
     versification,
+    currentScope,
   } = proejctInputs;
 
   // generate a project id
@@ -153,9 +190,9 @@ export async function createNewAudioProject(
 
   // generate project scope
   // TODO : Add provision later to select scopes
-  const currentScope = await generateProjectScope();
+  const selectedScope = await generateProjectScope(currentScope);
 
-  console.log("in create audio project ==========>", scribeId, currentScope);
+  console.log("in create audio project ==========>", scribeId, selectedScope);
 
   const newProjectMeta: object = {
     format: "scripture burrito",
@@ -225,7 +262,7 @@ export async function createNewAudioProject(
             },
           },
         },
-        currentScope: currentScope,
+        currentScope: selectedScope,
       },
     },
     confidential: false,
@@ -273,7 +310,7 @@ export async function createNewAudioProject(
   );
 
   // do not create if no versification
-  if (!versification?.file) return;
+  if (!versification?.file) {return;}
 
   console.log(
     "lib path : --------> ",
@@ -312,3 +349,4 @@ export async function createNewAudioProject(
 
   return newProjectMeta;
 }
+
