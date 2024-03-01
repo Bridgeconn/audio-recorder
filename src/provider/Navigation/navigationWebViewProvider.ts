@@ -41,7 +41,7 @@ export class NavigationWebViewProvider implements vscode.WebviewViewProvider {
     webviewPanel.webview.onDidReceiveMessage(
       async (e: { type: unknown; data: unknown }) => {
         console.log(
-          "NavigationWebViewProvider.onDidReceiveMessage ======== 000 111 222 333 "
+          "NavigationWebViewProvider.onDidReceiveMessage ======== 000 111 222 333 ", e
         );
       }
     );
