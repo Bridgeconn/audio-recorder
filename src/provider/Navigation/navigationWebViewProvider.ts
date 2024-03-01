@@ -8,6 +8,7 @@ import {
 } from "../../types/navigationView";
 import { getVersification } from "./functions/getVersification";
 import { getProjectMeta } from "../../utils/getMeta";
+import { storageKeys } from "../../types/storage";
 
 export class NavigationWebViewProvider implements vscode.WebviewViewProvider {
   /**
@@ -26,9 +27,11 @@ export class NavigationWebViewProvider implements vscode.WebviewViewProvider {
   private _webviewView: vscode.WebviewView | undefined;
   private _context: vscode.ExtensionContext;
   private _metadata: Record<string, any> | undefined;
+  private readonly globalState: vscode.Memento;
 
   constructor(private readonly context: vscode.ExtensionContext) {
     this._context = context;
+    this.globalState = context.globalState;
     this._registerCommands();
     this._getMetaData();
   }
@@ -57,18 +60,21 @@ export class NavigationWebViewProvider implements vscode.WebviewViewProvider {
         switch (e.type) {
           case NavWebToExtMsgTypes.FetchVersification: {
             // TODO : Change the versifcation to constructor on load and keep the data in storage
-            const versification = this._metadata && await getVersification(this._metadata);
-            if(versification) {
-                this.postMessage(webviewPanel.webview, {
-                  type: ExttoNavWebMsgTypes.VersificationData,
-                  data: versification,
-                });
+            const versification =
+              this._metadata && (await getVersification(this._metadata));
+            if (versification) {
+              this.postMessage(webviewPanel.webview, {
+                type: ExttoNavWebMsgTypes.VersificationData,
+                data: versification,
+              });
             }
             break;
           }
 
           case NavWebToExtMsgTypes.BCSelection: {
-            console.log("BC Selection =====> ", e.data);
+            // console.log("BC Selection =====> ", e.data);
+            this.updateGlobalState(storageKeys.currentBC, e.data);
+            vscode.commands.executeCommand('scribe-audio.openAudioEditor');
             break;
           }
 
@@ -164,5 +170,15 @@ export class NavigationWebViewProvider implements vscode.WebviewViewProvider {
         </body>
         </html>
     `;
+  }
+
+  // Method to update the global state
+  public updateGlobalState(key: string, value: any) {
+    this.globalState.update(key, value);
+  }
+
+  // Method to retrieve data from the global state
+  public getGlobalState(key: string): any {
+    return this.globalState.get(key);
   }
 }
