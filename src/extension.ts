@@ -7,8 +7,10 @@ import {
   promptAndCollectProjectDetails,
 } from "./utils/project";
 
-import * as path from "path";
-import { AudioEditorProvider } from "./provider/Editor/customEditor";
+import {
+  initAudioEditor,
+  scribeAudioEditorInstance,
+} from "./provider/Editor/scribeAudioEditor";
 import { NavigationWebViewProvider } from "./provider/Navigation/navigationWebViewProvider";
 
 // get root path of opened workspace in vscode
@@ -210,28 +212,50 @@ export function activate(context: vscode.ExtensionContext) {
   /**
    * Custom Editor for .swav files
    */
-  context.subscriptions.push(AudioEditorProvider.register(context));
+  // context.subscriptions.push(AudioEditorProvider.register(context));
+
+  /**
+   * Register Audio Editor
+   */
+  context.subscriptions.push(
+    vscode.commands.registerCommand(
+      "scribe-audio.openAudioEditor",
+      async () => {
+        // if (!scribeAudioEditorInstance) {
+        //   // Create a new instance of the custom audio editor
+        //   await initAudioEditor(context);
+        // }
+        // TODO : Need to checl multi instances create issue or not
+        await initAudioEditor(context);
+      }
+    )
+  );
+
   /**
    * Register Navigation sidebar provider
    */
   context.subscriptions.push(NavigationWebViewProvider.register(context));
 
-  // trigger on file create
-  context.subscriptions.push(
-    vscode.workspace.onDidCreateFiles((event) => {
-      event.files.forEach((file) => {
-        if (file.fsPath.toLocaleLowerCase().endsWith(".swav")) {
-          // Open custom editor for .editor files
-          vscode.commands.executeCommand(
-            "vscode.openWith",
-            vscode.Uri.file(file.fsPath),
-            "scribe.scribeAudioEditor"
-          );
-        }
-      });
-    })
-  );
+  // // trigger on file create
+  // context.subscriptions.push(
+  //   vscode.workspace.onDidCreateFiles((event) => {
+  //     event.files.forEach((file) => {
+  //       if (file.fsPath.toLocaleLowerCase().endsWith(".swav")) {
+  //         // Open custom editor for .editor files
+  //         vscode.commands.executeCommand(
+  //           "vscode.openWith",
+  //           vscode.Uri.file(file.fsPath),
+  //           "scribe.scribeAudioEditor"
+  //         );
+  //       }
+  //     });
+  //   })
+  // );
 }
 
 // This method is called when your extension is deactivated
-export function deactivate() {}
+export function deactivate() {
+  if (scribeAudioEditorInstance) {
+    scribeAudioEditorInstance.dispose();
+  }
+}

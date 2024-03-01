@@ -54,6 +54,10 @@ function App() {
     };
   }, []);
 
+  const handleChapterSelect = (bookId: string, chapter: number) => {
+    postMessage(NavWebToExtMsgTypes.BCSelection, { bookId, chapter });
+  };
+
   return (
     <div className="">
       <div>
@@ -64,9 +68,13 @@ function App() {
                 <summary className="w-full cursor-pointer">
                   {bookId.toUpperCase()}
                 </summary>
-                <div className="grid grid-cols-3 gap-2">
-                  {chapters?.map((chapter: string, index:number) => (
-                    <VSCodeButton>{index +1 }</VSCodeButton>
+                <div className="grid grid-cols-3 gap-2 my-2">
+                  {chapters?.map((chapter: string, index: number) => (
+                    <VSCodeButton
+                      onClick={() => handleChapterSelect(bookId, index + 1)}
+                    >
+                      {index + 1}
+                    </VSCodeButton>
                   ))}
                 </div>
               </details>

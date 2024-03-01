@@ -67,6 +67,11 @@ export class NavigationWebViewProvider implements vscode.WebviewViewProvider {
             break;
           }
 
+          case NavWebToExtMsgTypes.BCSelection: {
+            console.log("BC Selection =====> ", e.data);
+            break;
+          }
+
           default:
             break;
         }

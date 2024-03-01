@@ -2,7 +2,8 @@ import { IVersification } from "./versification";
 
 // msg types from navigation webview to nav provider
 export enum NavWebToExtMsgTypes {
-    FetchVersification = "Fetch Versification Data"
+    FetchVersification = "Fetch Versification Data",
+    BCSelection = "Book Chapter Seelction"
 }
 
 
@@ -11,7 +12,7 @@ export enum NavWebToExtMsgTypes {
 
 // msg types from nav provider to web view navigation
 export enum ExttoNavWebMsgTypes {
-    VersificationData = "Versification Data"
+    VersificationData = "Versification Data",
 }
 
 type ExtToNavMsgDataType = Partial<IVersification>;

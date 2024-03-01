@@ -92,7 +92,12 @@
         "command": "scribe-audio.createNewProjectBtnClick",
         "title": "Init Audio Project Btn Invoke",
         "category": "ScribeAudio"
-      }
+      },
+      {
+        "command": "scribe-audio.openAudioEditor",
+        "title": "Open Scribe Audio Editor",
+        "category": "ScribeAudio"
+    }
     ]
   },
   "scripts": {
