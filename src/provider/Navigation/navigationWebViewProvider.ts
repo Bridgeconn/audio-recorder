@@ -1,6 +1,13 @@
 import * as vscode from "vscode";
 import { getNonce } from "../../utils/getNonce";
-import { ExtMessage } from "../../../types/message";
+import {
+  ExtToNavMsg,
+  ExttoNavWebMsgTypes,
+  NavWebToExtMsgTypes,
+  versificationData,
+} from "../../types/navigationView";
+import { getVersification } from "./functions/getVersification";
+import { getProjectMeta } from "../../utils/getMeta";
 
 export class NavigationWebViewProvider implements vscode.WebviewViewProvider {
   /**
@@ -18,10 +25,12 @@ export class NavigationWebViewProvider implements vscode.WebviewViewProvider {
 
   private _webviewView: vscode.WebviewView | undefined;
   private _context: vscode.ExtensionContext;
+  private _metadata: Record<string, any> | undefined;
 
   constructor(private readonly context: vscode.ExtensionContext) {
     this._context = context;
     this._registerCommands();
+    this._getMetaData();
   }
 
   public async resolveWebviewView(
@@ -33,16 +42,34 @@ export class NavigationWebViewProvider implements vscode.WebviewViewProvider {
       enableScripts: true,
     };
 
-    webviewPanel.webview.html = this.getHtmlForWebview(webviewPanel.webview,);
+    webviewPanel.webview.html = this.getHtmlForWebview(webviewPanel.webview);
 
     /**
      * Handle recieve message from webview
      */
     webviewPanel.webview.onDidReceiveMessage(
-      async (e: { type: unknown; data: unknown }) => {
+      async (e: { type: NavWebToExtMsgTypes; data: unknown }) => {
         console.log(
-          "NavigationWebViewProvider.onDidReceiveMessage ======== 000 111 222 333 ", e
+          "NavigationWebViewProvider.onDidReceiveMessage ======== 000 111 222 333 ",
+          e.type
         );
+
+        switch (e.type) {
+          case NavWebToExtMsgTypes.FetchVersification: {
+            // TODO : Change the versifcation to constructor on load and keep the data in storage
+            const versification = this._metadata && await getVersification(this._metadata);
+            if(versification) {
+                this.postMessage(webviewPanel.webview, {
+                  type: ExttoNavWebMsgTypes.VersificationData,
+                  data: versification,
+                });
+            }
+            break;
+          }
+
+          default:
+            break;
+        }
       }
     );
 
@@ -68,12 +95,18 @@ export class NavigationWebViewProvider implements vscode.WebviewViewProvider {
   }
 
   /**
-   * Send Message or event from EDITOR to Webview
+   * Get metadata on load - constructor
    */
-  private postMessage(webview: vscode.Webview, message: ExtMessage) {
-    webview.postMessage(message);
+  private async _getMetaData() {
+    this._metadata = await getProjectMeta();
   }
 
+  /**
+   * Send Message or event from EDITOR to Webview
+   */
+  private postMessage(webview: vscode.Webview, message: ExtToNavMsg) {
+    webview.postMessage(message);
+  }
 
   /**
    * Function to get the html of the Webview

@@ -73,21 +73,25 @@
     "commands": [
       {
         "command": "scribe-audio.scribeaudio",
-        "title": "Scribe Audio"
+        "title": "Scribe Audio",
+        "category": "ScribeAudio"
       },
       {
         "title": "Start a new Audio Project",
         "shortTitle": "Start a new Audio Project",
-        "command": "scribe-audio.initNewAudioProject"
+        "command": "scribe-audio.initNewAudioProject",
+        "category": "ScribeAudio"
       },
       {
         "command": "audio-explorer-sidebar-view.refreshEntry",
         "title": "Refresh",
-        "icon": "$(refresh)"
+        "icon": "$(refresh)",
+        "category": "ScribeAudio"
       },
       {
         "command": "scribe-audio.createNewProjectBtnClick",
-        "title": "Init Audio Project Btn Invoke"
+        "title": "Init Audio Project Btn Invoke",
+        "category": "ScribeAudio"
       }
     ]
   },

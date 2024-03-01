@@ -1,6 +1,6 @@
 // Get the languages from the ./iso-639-3.tab file
 
-import { LanguageMetadataType } from "../../types/language";
+import { LanguageMetadataType } from "../types/language";
 
 const isoLanguageData: any[] = [
     {

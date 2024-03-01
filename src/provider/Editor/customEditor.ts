@@ -6,7 +6,7 @@ import {
   ExtMessageType,
   WebviewMessage,
   WebviewMessageType,
-} from "../../../types/message";
+} from "../../types/message";
 import { getNonce } from "../../utils/getNonce";
 
 /**

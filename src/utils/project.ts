@@ -1,5 +1,5 @@
-import { LanguageMetadataType } from "../../types/language";
-import { AudioProjectCreationDetails } from "../../types/project";
+import { LanguageMetadataType } from "../types/language";
+import { AudioProjectCreationDetails } from "../types/project";
 import * as vscode from "vscode";
 import { LanguageCodes } from "./languageCodes";
 import packageInfo from "../../package.json";

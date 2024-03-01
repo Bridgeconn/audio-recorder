@@ -1,9 +1,9 @@
 // ------------------------------------ MSG TYPE From Extension to Webview ------------------------
 
-import { versificationData } from "./NavigationView";
+import { versificationData } from "./navigationView";
 
 // Type of messages from Extension to Webview
-export const ExtMessageType = {
+const ExtMessageType = {
     Info: "info",
     Prepare: "prepare",
     Data: "data",
@@ -48,7 +48,7 @@ export class ExtReloadMessage {
 // ------------------------------------ MSG TYPE From Webview to Extension ------------------------
 
 // Type of messages from Webview to Extension
-export const WebviewMessageType = {
+const WebviewMessageType = {
     Ready: "ready",
     Prepare: "prepare",
     Data: "data",

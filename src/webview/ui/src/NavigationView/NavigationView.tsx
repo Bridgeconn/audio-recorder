@@ -1,14 +1,48 @@
 import { VSCodeButton } from "@vscode/webview-ui-toolkit/react";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
+import {
+  NavWebToExtMsgTypes,
+  ExttoNavWebMsgTypes,
+} from "../../../../types/navigationView";
+import { IVersification } from "../../../../types/versification";
 
 const vscode = acquireVsCodeApi();
 
 function App() {
+  const [versificationData, setVersificationData] =
+    useState<IVersification | null>(null);
+
+  // function handle post message
+  const postMessage = (type: string, data: unknown) => {
+    if (type) {
+      vscode.postMessage({
+        type: type,
+        data: data,
+      });
+    }
+  };
+
+  console.log("verss )))))))))))) == >", versificationData);
+
   useEffect(() => {
     // listen for vscode.postmessage event from extension to webview here
+    if (!versificationData) {
+      postMessage(NavWebToExtMsgTypes.FetchVersification, "");
+    }
+
     const handleExtensionPostMessages = (event: MessageEvent) => {
       console.log("listened event in Nav UI  : ", event);
-      // add switch case to handle message types
+      const { type, data } = event.data;
+      switch (type) {
+        case ExttoNavWebMsgTypes.VersificationData: {
+          // processed vesification data from workspace dir
+          setVersificationData(data);
+          break;
+        }
+
+        default:
+          break;
+      }
     };
 
     // add listener for the event
@@ -20,22 +54,25 @@ function App() {
     };
   }, []);
 
-  // function handle post message
-  const postMessage = (type: string, data: unknown) => {
-    if (type && data) {
-      vscode.postMessage({
-        type: type,
-        data: data,
-      });
-    }
-  };
-
   return (
-    <div className="text-green-500">
-      <p>Navigation</p>
-      <VSCodeButton onClick={() => postMessage("test-nav-btn", "Test string")}>
-        Click Me Test button
-      </VSCodeButton>
+    <div className="">
+      <div>
+        {versificationData &&
+          Object.entries(versificationData.maxVerses).map(
+            ([bookId, chapters]) => (
+              <details className="pt-3">
+                <summary className="w-full cursor-pointer">
+                  {bookId.toUpperCase()}
+                </summary>
+                <div className="grid grid-cols-3 gap-2">
+                  {chapters?.map((chapter: string, index:number) => (
+                    <VSCodeButton>{index +1 }</VSCodeButton>
+                  ))}
+                </div>
+              </details>
+            )
+          )}
+      </div>
     </div>
   );
 }
