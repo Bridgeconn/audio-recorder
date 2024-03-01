@@ -1,7 +1,6 @@
 // The module 'vscode' contains the VS Code extensibility API
 // Import the module and reference it with the alias vscode in your code below
 import * as vscode from "vscode";
-import { AudioPanel } from "./panels/AudioPanel";
 import { getWorkSpaceFolder, openWorkspace } from "./utils/common";
 import {
   createNewAudioProject,
@@ -9,7 +8,8 @@ import {
 } from "./utils/project";
 
 import * as path from "path";
-import { AudioEditorProvider, CustomEditorProvider } from "./webview/Editor/customEditor";
+import { AudioEditorProvider } from "./provider/Editor/customEditor";
+import { NavigationWebViewProvider } from "./provider/Navigation/navigationWebViewProvider";
 
 // get root path of opened workspace in vscode
 const ROOT_PATH = getWorkSpaceFolder();
@@ -62,7 +62,7 @@ export function activate(context: vscode.ExtensionContext) {
   const helloCommand = vscode.commands.registerCommand(
     "scribe-audio.scribeaudio",
     () => {
-      AudioPanel.render();
+      console.log("Hello world from Scribe Audio");
     }
   );
 
@@ -209,14 +209,18 @@ export function activate(context: vscode.ExtensionContext) {
 
   /**
    * Custom Editor for .swav files
-   */  
+   */
   context.subscriptions.push(AudioEditorProvider.register(context));
-  
+  /**
+   * Register Navigation sidebar provider
+   */
+  context.subscriptions.push(NavigationWebViewProvider.register(context));
+
   // trigger on file create
   context.subscriptions.push(
     vscode.workspace.onDidCreateFiles((event) => {
       event.files.forEach((file) => {
-        if (file.fsPath.toLocaleLowerCase().endsWith(".swav") ) {
+        if (file.fsPath.toLocaleLowerCase().endsWith(".swav")) {
           // Open custom editor for .editor files
           vscode.commands.executeCommand(
             "vscode.openWith",

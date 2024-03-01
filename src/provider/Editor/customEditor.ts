@@ -262,12 +262,22 @@ export class AudioEditorProvider
         this._context.extensionUri,
         "src",
         "webview",
-        "script",
-        "editor.js"
+        "ui",
+        "dist",
+        "AudioEditorView",
+        "index.js"
       )
     );
     const styleVSCodeUri = webview.asWebviewUri(
-      vscode.Uri.joinPath(this._context.extensionUri, "dist", "vscode.css")
+      vscode.Uri.joinPath(
+        this._context.extensionUri,
+        "src",
+        "webview",
+        "ui",
+        "dist",
+        "AudioEditorView",
+        "index.css"
+      )
     );
 
     // Use a nonce to whitelist which scripts can be run
@@ -288,11 +298,7 @@ export class AudioEditorProvider
             <title>Scribe Audio Editor</title>
         </head>
         <body>
-            <div id="root">
-                <h1>Scribe Audio Editor</h1>
-                <p>Welcome to scribe audio editor</p>
-                <p>Welcome to scribe audio editor</p>
-            </div>
+            <div id="root"></div>
             <script nonce="${nonce}" src="${scriptUri}"></script>
         </body>
         </html>

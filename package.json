@@ -33,19 +33,14 @@
       }
     ],
     "views": {
-      "audio-explorer-sidebar": [
+      "audio-explorer-sidebar-view": [
         {
           "id": "audio-explorer-sidebar",
+          "type": "webview",
           "name": "Audio Explorer",
           "visibility": "visible",
-          "icon": "$(mic)"
-        },
-        {
-          "id": "audio-explorer-sidebar-navigation",
-          "name": "Audio Navigation",
-          "visibility": "visible",
           "icon": "$(mic)",
-          "contextualTitle": "Audio Navigation"
+          "contextualTitle": "Audio Explorer"
         },
         {
           "id": "audio-explorer-sidebar-options",
@@ -59,7 +54,7 @@
     "viewsContainers": {
       "activitybar": [
         {
-          "id": "audio-explorer-sidebar",
+          "id": "audio-explorer-sidebar-view",
           "title": "Audio Recorder",
           "icon": "$(mic)"
         }
@@ -68,8 +63,8 @@
     "menus": {
       "view/title": [
         {
-          "command": "audio-explorer-sidebar.refreshEntry",
-          "when": "view == audio-explorer-sidebar",
+          "command": "audio-explorer-sidebar-view.refreshEntry",
+          "when": "view == audio-explorer-sidebar-view",
           "group": "navigation"
         }
       ],
@@ -86,7 +81,7 @@
         "command": "scribe-audio.initNewAudioProject"
       },
       {
-        "command": "audio-explorer-sidebar.refreshEntry",
+        "command": "audio-explorer-sidebar-view.refreshEntry",
         "title": "Refresh",
         "icon": "$(refresh)"
       },
