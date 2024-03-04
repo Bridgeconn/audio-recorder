@@ -20,7 +20,7 @@ export class ScribeAudioEditor {
     // Create and configure the webview panel
     this.panel = vscode.window.createWebviewPanel(
       ScribeAudioEditor.viewType,
-      "Scribe Audio Editor",
+      `${this.currentBC.bookId} - ${this.currentBC.chapter}`, // panel tab title
       vscode.ViewColumn.Beside,
       {
         enableScripts: true,
