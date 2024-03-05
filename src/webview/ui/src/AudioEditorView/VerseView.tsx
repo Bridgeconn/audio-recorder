@@ -3,13 +3,13 @@ import React from "react";
 import AudioToolBar from "./AudioToolBar";
 
 interface IVerseView {
-  chapterData: IVerseData;
+  verseData: IVerseData;
   selectedVerse: number | null;
   setSelectedVerse: React.Dispatch<React.SetStateAction<number | null>>;
 }
 
 function VerseView({
-  chapterData,
+  verseData,
   selectedVerse,
   setSelectedVerse,
 }: IVerseView) {
@@ -17,7 +17,7 @@ function VerseView({
     <div className="flex gap-2 items-center relative">
       {/* verse num */}
       <div className="p-2 w-6 h-6 rounded-full border border-gray-600 flex justify-center items-center">
-        {chapterData.verseNumber}
+        {verseData.verseNumber}
       </div>
 
       {/* content */}
@@ -26,16 +26,16 @@ function VerseView({
         <div
           className={`border rounded-md w-full px-2 py-3 cursor-pointer min-h-10
           ${
-            selectedVerse === chapterData.verseNumber
+            selectedVerse === verseData.verseNumber
               ? "border-gray-100 "
               : "border-gray-600"
           }`}
-          onClick={() => setSelectedVerse(chapterData.verseNumber)}
+          onClick={() => setSelectedVerse(verseData.verseNumber)}
         >
-          <p>{chapterData.verseText}</p>
+          <p>{verseData.verseText}</p>
         </div>
         {/* toolbar */}
-        {selectedVerse === chapterData.verseNumber && <AudioToolBar />}
+        {selectedVerse === verseData.verseNumber && <AudioToolBar />}
       </div>
     </div>
   );

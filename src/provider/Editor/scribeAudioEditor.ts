@@ -3,28 +3,30 @@ import { storageKeys } from "../../types/storage";
 import { getNonce } from "../../utils/getNonce";
 import { readUsfm } from "./utils/readBook";
 import { processTheChapter } from "./utils/processChapter";
-import { IChapterdata } from "../../types/editor";
+import { ExttoEditorWebMsgTypes, IChapterdata } from "../../types/editor";
 
 export class ScribeAudioEditor {
   private panel: vscode.WebviewPanel | undefined;
   private static readonly viewType = "scribeAudioEditor";
   private readonly globalState: vscode.Memento;
   private readonly currentBC: { bookId: string; chapter: number };
-  private currentBookContent: {verseNumber:number; verseText:string; audio:any}[]|undefined;
-  private currentChapterVerses: IChapterdata[]|undefined;
+  private currentBookContent:
+    | { verseNumber: number; verseText: string; audio: any }[]
+    | undefined;
+  private currentChapterVerses: IChapterdata[] | undefined;
   private readonly projectDirectory: vscode.Uri;
   constructor(private readonly context: vscode.ExtensionContext) {
     // starting here
     this.globalState = context.workspaceState;
     this.currentBC = this.getGlobalState(storageKeys.currentBC);
     this.projectDirectory = this.getGlobalState(storageKeys.workspaceDirectory);
-    console.log("project DIR",this.projectDirectory);
-    
+    console.log("project DIR", this.projectDirectory);
+
     console.log(
       "called Scribe Editor ============= 7777777777777777777777777777777",
       this.globalState
     );
-    
+
     // Create and configure the webview panel
     this.panel = vscode.window.createWebviewPanel(
       ScribeAudioEditor.viewType,
@@ -34,21 +36,30 @@ export class ScribeAudioEditor {
         enableScripts: true,
       }
     );
+
+    // set UI here
+    if (this.panel) {
+      this.panel.webview.html = this.getHtmlForEditoPanel(this.panel.webview);
+    }
+
     console.log("readData");
-    this.readData(this.currentBC.bookId,this.currentBC.chapter).then((value)=>{
-      this.currentChapterVerses = value;
-      console.log("currentChapterVerses",this.currentChapterVerses,"value",value);
-      if (this.panel?.webview){
-        this.postMessage(this.panel?.webview, {
-          type: "stringChapterData",
-          data: this.currentChapterVerses,
-        });
+    this.readData(this.currentBC.bookId, this.currentBC.chapter).then(
+      (value) => {
+        this.currentChapterVerses = value;
+        console.log(
+          "currentChapterVerses",
+          this.currentChapterVerses,
+          "value",
+          value
+        );
+        if (this.panel?.webview) {
+          this.postMessage(this.panel?.webview, {
+            type: ExttoEditorWebMsgTypes.ChapterData,
+            data: this.currentChapterVerses,
+          });
+        }
       }
-      // set UI here
-      if(this.panel){
-        this.panel.webview.html = this.getHtmlForEditoPanel(this.panel.webview);
-      }
-    });
+    );
 
     // Dispose of the panel when it is closed
     this.panel.onDidDispose(() => {
@@ -62,23 +73,29 @@ export class ScribeAudioEditor {
     webview.postMessage(message);
   }
   // Read the chapter content (USFM and Audio)
-  private async readData(book: string, chapter:number) {
+  private async readData(book: string, chapter: number) {
     console.log("inside read data");
-    
+
     let versificationData;
     // read only once while changing book
     const usfmData = await readUsfm(book);
-    console.log("usfmdata",usfmData);
-    
+    console.log("usfmdata", usfmData);
+
     if (!usfmData) {
       const versification = this.getGlobalState(storageKeys.versification);
-      console.log("versification",versification);
-      
-      const versificationJSON = JSON.parse(versification);
-      versificationData=versificationJSON.maxVerses[book];
-    } 
+      console.log("versification", versification);
 
-    const chapterData = await processTheChapter(book,chapter,usfmData, versificationData,this.projectDirectory);
+      const versificationJSON = JSON.parse(versification);
+      versificationData = versificationJSON.maxVerses[book];
+    }
+
+    const chapterData = await processTheChapter(
+      book,
+      chapter,
+      usfmData,
+      versificationData,
+      this.projectDirectory
+    );
     return chapterData;
   }
 
