@@ -29,7 +29,8 @@ function App() {
       switch (type) {
         case ExttoEditorWebMsgTypes.ChapterData: {
           // processed vesification data from workspace dir
-
+          console.log("data loading",data[0]);
+          
           setChapterContent(data[0]);
           break;
         }
