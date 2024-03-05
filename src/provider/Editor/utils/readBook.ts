@@ -32,13 +32,13 @@ export async function readUsfm(book: string) {
 		);
 
 		const usfm = await vscode.workspace.fs.readFile(projectMetadataPath);
-		console.log('usfm', usfm.toString());
+		// console.log('usfm', usfm.toString());
 
 		const myUsfmParser = new grammar.USFMParser(
 			usfm.toString(),
 			grammar.LEVEL.RELAXED,
 		);
-		console.log('myUsfmParser', myUsfmParser);
+		// console.log('myUsfmParser', myUsfmParser);
 
 		const isJsonValid = myUsfmParser.validate();
 		if (isJsonValid) {

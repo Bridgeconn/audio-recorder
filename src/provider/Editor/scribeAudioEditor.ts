@@ -10,9 +10,7 @@ export class ScribeAudioEditor {
   private static readonly viewType = "scribeAudioEditor";
   private readonly globalState: vscode.Memento;
   private readonly currentBC: { bookId: string; chapter: number };
-  private currentBookContent:
-    | { verseNumber: number; verseText: string; audio: any }[]
-    | undefined;
+  private loadedUSFMBookContent: Record<string, any>;
   private currentChapterVerses: IChapterdata[] | undefined;
   private readonly projectDirectory: vscode.Uri;
   constructor(private readonly context: vscode.ExtensionContext) {
@@ -20,6 +18,18 @@ export class ScribeAudioEditor {
     this.globalState = context.workspaceState;
     this.currentBC = this.getGlobalState(storageKeys.currentBC);
     this.projectDirectory = this.getGlobalState(storageKeys.workspaceDirectory);
+    this.loadedUSFMBookContent = this.getGlobalState(
+      storageKeys.loadedUSFMContent
+    );
+
+    // parse if loadedUSFM have content
+    if (
+      this.loadedUSFMBookContent &&
+      typeof this.loadedUSFMBookContent === "string"
+    ) {
+      this.loadedUSFMBookContent = JSON.parse(this.loadedUSFMBookContent);
+    }
+
     console.log("project DIR", this.projectDirectory);
 
     console.log(
@@ -72,13 +82,25 @@ export class ScribeAudioEditor {
   private postMessage(webview: vscode.Webview, message: any) {
     webview.postMessage(message);
   }
-  // Read the chapter content (USFM and Audio)
+
+  /**
+   * Read the chapter content (USFM and Audio)
+   */
   private async readData(book: string, chapter: number) {
     console.log("inside read data");
 
     let versificationData;
     // read only once while changing book
-    const usfmData = await readUsfm(book);
+    console.log(
+      "LOaded status of book : ================>",
+      !!this.loadedUSFMBookContent?.[book],
+      book
+    );
+
+    const usfmData =
+      this.loadedUSFMBookContent && this.loadedUSFMBookContent[book]
+        ? this.loadedUSFMBookContent[book]
+        : await readUsfm(book);
     console.log("usfmdata", usfmData);
 
     if (!usfmData) {
@@ -87,6 +109,24 @@ export class ScribeAudioEditor {
 
       const versificationJSON = JSON.parse(versification);
       versificationData = versificationJSON.maxVerses[book];
+    } else {
+      // store parsed data to resue
+      if (!this.loadedUSFMBookContent?.[book]) {
+        if (!this.loadedUSFMBookContent) {
+          this.loadedUSFMBookContent = {};
+        }
+        this.loadedUSFMBookContent[book] = usfmData;
+        console.log(
+          "in SAVE AFTER PARSE 00000000000000000000000000000000000000000"
+        );
+      }
+      this.updateGlobalState(
+        storageKeys.loadedUSFMContent,
+        JSON.stringify(this.loadedUSFMBookContent)
+      );
+      console.log(
+        "in SAVE AFter load 000000011111111111111122222222222222222222233333333333333"
+      );
     }
 
     const chapterData = await processTheChapter(
