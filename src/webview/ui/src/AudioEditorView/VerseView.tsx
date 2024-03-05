@@ -1,6 +1,7 @@
 import { IVerseData } from "../../../../types/editor";
 import React from "react";
 import AudioToolBar from "./AudioToolBar";
+import Play from "../IconsComponents/Play";
 
 interface IVerseView {
   verseData: IVerseData;
@@ -8,11 +9,12 @@ interface IVerseView {
   setSelectedVerse: React.Dispatch<React.SetStateAction<number | null>>;
 }
 
-function VerseView({
-  verseData,
-  selectedVerse,
-  setSelectedVerse,
-}: IVerseView) {
+function VerseView({ verseData, selectedVerse, setSelectedVerse }: IVerseView) {
+  const handlePlayAudio = (e, verseNum: number) => {
+    console.log("Play audio : ", verseNum);
+    e.stopPropagation();
+  };
+
   return (
     <div className="flex gap-2 items-center relative">
       {/* verse num */}
@@ -32,7 +34,19 @@ function VerseView({
           }`}
           onClick={() => setSelectedVerse(verseData.verseNumber)}
         >
-          <p>{verseData.verseText}</p>
+          <div className="flex gap-2">
+            <div className="flex-1">{verseData.verseText}</div>
+
+            {verseData.audio && verseData.audio?.default && (
+              <div className="">
+                <button
+                  className="cursor-pointer flex justify-center items-center"
+                  onClick={(e) => handlePlayAudio(e, verseData.verseNumber)}>
+                  <Play classes="w-5 h-5  stroke-green-500 hover:stroke-green-700" />
+                </button>
+              </div>
+            )}
+          </div>
         </div>
         {/* toolbar */}
         {selectedVerse === verseData.verseNumber && <AudioToolBar />}
