@@ -31,7 +31,7 @@ export class NavigationWebViewProvider implements vscode.WebviewViewProvider {
 
   constructor(private readonly context: vscode.ExtensionContext) {
     this._context = context;
-    this.globalState = context.globalState;
+    this.globalState = context.workspaceState;
     this._registerCommands();
     this._getMetaData();
   }
@@ -63,6 +63,7 @@ export class NavigationWebViewProvider implements vscode.WebviewViewProvider {
             const versification =
               this._metadata && (await getVersification(this._metadata));
             if (versification) {
+              this.updateGlobalState(storageKeys.versification, JSON.stringify(versification));
               this.postMessage(webviewPanel.webview, {
                 type: ExttoNavWebMsgTypes.VersificationData,
                 data: versification,
@@ -109,7 +110,7 @@ export class NavigationWebViewProvider implements vscode.WebviewViewProvider {
    * Get metadata on load - constructor
    */
   private async _getMetaData() {
-    this._metadata = await getProjectMeta();
+    this._metadata = await getProjectMeta(this._context);
   }
 
   /**

@@ -1,6 +1,7 @@
 import * as vscode from "vscode";
+import { storageKeys } from "../types/storage";
 
-export async function getProjectMeta() {
+export async function getProjectMeta(context:vscode.ExtensionContext) {
   const workspaceRootUri = vscode.workspace.workspaceFolders?.[0].uri;
   if (!workspaceRootUri) {
     vscode.window.showErrorMessage("Workspace not opened");
@@ -11,7 +12,8 @@ export async function getProjectMeta() {
     workspaceRootUri,
     "metadata.json"
   );
-
+  // Storing theworkspace path globally
+  context.workspaceState.update(storageKeys.workspaceDirectory, workspaceRootUri);
   console.log("getProjectMeta constructor :  ------ ", metaUri);
 
   const metaJson = await vscode.workspace.fs.readFile(metaUri);
