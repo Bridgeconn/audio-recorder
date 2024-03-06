@@ -15,6 +15,7 @@
   },
   "dependencies": {
     "@vscode/webview-ui-toolkit": "^1.4.0",
+    "@wavesurfer/react": "^1.0.4",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "wavesurfer.js": "^7.7.3"

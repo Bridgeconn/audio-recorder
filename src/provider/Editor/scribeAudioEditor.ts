@@ -4,6 +4,7 @@ import { getNonce } from "../../utils/getNonce";
 import { readUsfm } from "./utils/readBook";
 import { processTheChapter } from "./utils/processChapter";
 import { ExttoEditorWebMsgTypes, IChapterdata } from "../../types/editor";
+import * as path from "path";
 
 export class ScribeAudioEditor {
   private panel: vscode.WebviewPanel | undefined;
@@ -32,11 +33,6 @@ export class ScribeAudioEditor {
 
     console.log("project DIR", this.projectDirectory);
 
-    console.log(
-      "called Scribe Editor ============= 7777777777777777777777777777777",
-      this.globalState
-    );
-
     // Create and configure the webview panel
     this.panel = vscode.window.createWebviewPanel(
       ScribeAudioEditor.viewType,
@@ -44,32 +40,67 @@ export class ScribeAudioEditor {
       vscode.ViewColumn.Beside,
       {
         enableScripts: true,
+        localResourceRoots: [
+          vscode.Uri.file(path.join(context.extensionPath, "src")),
+          vscode.Uri.file(
+            path.join(
+              vscode.workspace.workspaceFolders?.[0].uri.fsPath as string
+            )
+          ),
+        ],
       }
     );
 
     // set UI here
     if (this.panel) {
       this.panel.webview.html = this.getHtmlForEditoPanel(this.panel.webview);
-    }
 
-    console.log("readData");
-    this.readData(this.currentBC.bookId, this.currentBC.chapter).then(
-      (value) => {
-        this.currentChapterVerses = value;
-        console.log(
-          "currentChapterVerses",
-          this.currentChapterVerses,
-          "value",
-          value
-        );
-        if (this.panel?.webview) {
-          this.postMessage(this.panel?.webview, {
-            type: ExttoEditorWebMsgTypes.ChapterData,
-            data: this.currentChapterVerses,
-          });
+      // after panel init
+      this.readData(this.currentBC.bookId, this.currentBC.chapter).then(
+        async (value) => {
+          this.currentChapterVerses = value;
+          console.log(
+            "currentChapterVerses",
+            this.currentChapterVerses,
+            "value",
+            value
+          );
+          
+          // conversion of path to webViewPath
+          for (
+            let index = 0;
+            index < this.currentChapterVerses[0].contents.length;
+            index++
+          ) {
+            const currentverseAudioObj =
+              this.currentChapterVerses[0].contents[index].audio;
+            if (currentverseAudioObj?.take1) {
+              // currentverseAudioObj.take1 = audioBlob;
+              currentverseAudioObj.take1 = await this.convertToAsWebViewUri(
+                currentverseAudioObj.take1 as vscode.Uri
+              );
+            }
+            if (currentverseAudioObj?.take2) {
+              currentverseAudioObj.take2 = await this.convertToAsWebViewUri(
+                currentverseAudioObj.take2 as vscode.Uri
+              );
+            }
+            if (currentverseAudioObj?.take3) {
+              currentverseAudioObj.take3 = await this.convertToAsWebViewUri(
+                currentverseAudioObj.take3 as vscode.Uri
+              );
+            }
+          }
+
+          if (this.panel?.webview) {
+            this.postMessage(this.panel?.webview, {
+              type: ExttoEditorWebMsgTypes.ChapterData,
+              data: this.currentChapterVerses,
+            });
+          }
         }
-      }
-    );
+      );
+    }
 
     // Dispose of the panel when it is closed
     this.panel.onDidDispose(() => {
@@ -128,6 +159,12 @@ export class ScribeAudioEditor {
         "in SAVE AFter load 000000011111111111111122222222222222222222233333333333333"
       );
     }
+    console.log(
+      "SCRIBE PANLE ===================> ",
+      vscode.Uri.file("/myurl"),
+      " : :::::: ===== ",
+      this.panel?.webview.asWebviewUri(vscode.Uri.file("/myurl"))
+    );
 
     const chapterData = await processTheChapter(
       book,
@@ -147,6 +184,17 @@ export class ScribeAudioEditor {
   // Method to retrieve data from the global state
   public getGlobalState(key: string): any {
     return this.globalState.get(key);
+  }
+
+  /**
+   * Public method to convert normal file uri to webview uri
+   */
+  public async convertToAsWebViewUri(url: vscode.Uri) {
+    if (this.panel) {
+      const webviewUri = this.panel.webview.asWebviewUri(url);
+      return webviewUri.toString();
+    }
+    return undefined;
   }
 
   // Method to dispose the panel
@@ -194,7 +242,7 @@ export class ScribeAudioEditor {
         <head>
             <meta charset="UTF-8">
             
-            <meta http-equiv="Content-Security-Policy" content="default-src 'none'; img-src ${webview.cspSource} blob:; style-src ${webview.cspSource}; script-src 'nonce-${nonce}';">
+            <!-- <meta http-equiv="Content-Security-Policy" content="default-src 'none'; img-src ${webview.cspSource} blob:; style-src ${webview.cspSource}; script-src 'nonce-${nonce}';"> -->
             
             <meta name="viewport" content="width=device-width, initial-scale=1.0">
             

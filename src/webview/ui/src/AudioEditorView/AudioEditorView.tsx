@@ -2,8 +2,6 @@ import { useEffect, useState } from "react";
 import VerseView from "./VerseView";
 import { ExttoEditorWebMsgTypes, IChapterdata } from "../../../../types/editor";
 
-import WaveSurfer from "wavesurfer.js";
-
 const vscode = acquireVsCodeApi();
 
 function App() {
@@ -48,8 +46,6 @@ function App() {
       window.removeEventListener("message", handleExtensionPostMessages);
     };
   }, []);
-
-  console.log("999999999999999999999", { chapterContent });
 
   return (
     <main className="my-5 flex flex-col gap-y-5">

@@ -1,7 +1,16 @@
+import * as vscode from 'vscode';
+
+export interface IAudioData {
+  default: string;
+  take1?: string | vscode.Uri;
+  take2?: string | vscode.Uri;
+  take3?: string | vscode.Uri;
+}
+
 export interface IVerseData {
   verseNumber: number;
   verseText: string;
-  audio: any;
+  audio: IAudioData | undefined;
 }
 
 export interface IChapterdata {
@@ -17,9 +26,8 @@ export enum ExttoEditorWebMsgTypes {
 type ExtToEditorMsgDataType = ExttoEditorWebMsgTypes.ChapterData;
 
 export type ExtToNavMsg = {
-  type : ExtToEditorMsgDataType;
-  data :IChapterdata
-}
-
+  type: ExtToEditorMsgDataType;
+  data: IChapterdata;
+};
 
 // Message Type From UI to Extension
