@@ -71,6 +71,12 @@ export async function processTheChapter(
 
     let contents: { verseNumber: number; verseText: string; audio: any }[] = [];
     let verses: { verseNumber: number; verseText: string; audio: any }[] = [];
+    verses.push({
+      verseNumber: 0,
+      verseText: "Chapter Intro",
+      // audio: '',
+      audio: audioFileExists ? audioData[0] : "",
+    });
     for (let v = 1; v <= chapterContent.contents.length; v += 1) {
       if (chapterContent.contents[v]?.verseNumber) {
         verses.push({
@@ -91,6 +97,12 @@ export async function processTheChapter(
   } else {
     let contents: { verseNumber: number; verseText: string; audio: any }[] = [];
     let verses: { verseNumber: number; verseText: string; audio: any }[] = [];
+    verses.push({
+      verseNumber: 0,
+      verseText: "Chapter Intro",
+      // audio: '',
+      audio: audioFileExists ? audioData[0] : "",
+    });
     for (let v = 1; v <= parseInt(versifcationData[chapter - 1], 10); v += 1) {
       verses.push({
         verseNumber: v,

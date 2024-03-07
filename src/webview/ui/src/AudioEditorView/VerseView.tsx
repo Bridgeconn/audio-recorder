@@ -10,17 +10,15 @@ interface IVerseView {
 }
 
 function VerseView({ verseData, selectedVerse, setSelectedVerse }: IVerseView) {
-  // const handlePlayAudio = (e, verseNum: number) => {
-  // console.log("Play audio : ", verseNum, verseData.audio);
-  // e.stopPropagation();
-  // };
 
   return (
     <div className="flex gap-2 items-center relative">
       {/* verse num */}
-      <div className="p-2 w-6 h-6 rounded-full border border-gray-600 flex justify-center items-center">
-        {verseData.verseNumber}
-      </div>
+      {verseData.verseNumber > 0 && (
+				<div className='p-2 w-6 h-6 rounded-full border border-gray-600 flex justify-center items-center'>
+					{verseData.verseNumber}
+				</div>
+			)}
 
       {/* content */}
       <div className="flex-1 flex flex-col">
@@ -41,7 +39,6 @@ function VerseView({ verseData, selectedVerse, setSelectedVerse }: IVerseView) {
               <div className="">
                 <button
                   className="flex justify-center items-center"
-                  // onClick={(e) => handlePlayAudio(e, verseData.verseNumber)}
                 >
                   <Play classes="w-5 h-5  stroke-green-500" />
                 </button>
