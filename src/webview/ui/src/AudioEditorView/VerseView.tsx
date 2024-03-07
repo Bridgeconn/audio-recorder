@@ -51,7 +51,7 @@ function VerseView({ verseData, selectedVerse, setSelectedVerse }: IVerseView) {
         </div>
         {/* toolbar */}
         {selectedVerse === verseData.verseNumber && (
-          <AudioToolBar audioData={verseData?.audio} />
+          <AudioToolBar audioData={verseData?.audio} selectedVerse={selectedVerse}/>
         )}
       </div>
     </div>
