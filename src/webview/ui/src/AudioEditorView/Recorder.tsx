@@ -36,6 +36,7 @@ function Recorder({ selectedVerse }: IRecorderProps) {
       <button
         className="cursor-pointer flex justify-center items-center"
         onClick={() => handleStartRecord()}
+        title="Record"
       >
         <Record
           classes={`${
@@ -49,6 +50,7 @@ function Recorder({ selectedVerse }: IRecorderProps) {
           recStarted ? "cursor-pointer" : "pointer-events-none"
         } flex justify-center items-center`}
         onClick={() => handleStopRecord()}
+        title="Stop"
       >
         <Stop classes="w-5 h-5  stroke-red-500 hover:stroke-red-700" />
       </button>
