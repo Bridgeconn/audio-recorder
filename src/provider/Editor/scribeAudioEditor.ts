@@ -80,7 +80,7 @@ export class ScribeAudioEditor {
 				async (e: EditorUItoExtMsg) => {
 					console.log(
 						'ScribeAudioEditor.onDidReceiveMessage ======== ********* ##### ',
-						e.type,
+						e.type,e.data
 					);
 
 					switch (e.type) {
@@ -135,6 +135,33 @@ export class ScribeAudioEditor {
 								`${this.currentBC.bookId} ${this.currentBC.chapter} ${verse}`,
 							);
 							stopRecord(this.recordingProcess);
+							// after panel init
+							this.readData(
+								this.currentBC.bookId,
+								this.currentBC.chapter,
+							);
+							break;
+						}
+
+						case EditorToExtMSgType.deleteAudio: {
+							const { verse } = e.data as RecordTriggerData;
+							console.log(
+								'Delete the audio',
+								`${this.currentBC.bookId} ${this.currentBC.chapter} ${verse}`,
+							);
+							// deleteAudio(this.recordingProcess);
+							const audioFile = await vscode.Uri.joinPath(
+								this.projectDirectory,
+								'audio',
+								'ingredients',
+								this.currentBC.bookId,
+								this.currentBC.chapter.toString(),
+								`${this.currentBC.chapter}_${verse}_1_default.wav`,
+							);
+
+              // Deleting the audio file
+							await vscode.workspace.fs.delete(audioFile);
+
 							// after panel init
 							this.readData(
 								this.currentBC.bookId,

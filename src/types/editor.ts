@@ -34,6 +34,7 @@ export type ExtToNavMsg = {
 export enum EditorToExtMSgType {
   startRecord = "trigger to start the record",
   stopRecord = "trigger to stop the record",
+  deleteAudio = "trigger to delete the audio",
 }
 
 // type EditorUItoExtMsgDataType = EditorToExtMSgType;
