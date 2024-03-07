@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import Record from "../IconsComponents/Record";
 import Stop from "../IconsComponents/Stop";
 import { EditorToExtMSgType } from "../../../../types/editor";
@@ -9,8 +9,12 @@ interface IRecorderProps {
 }
 
 function Recorder({ selectedVerse }: IRecorderProps) {
+  const [recStarted, setRecStarted] = useState<boolean>(false);
+
   const handleStartRecord = () => {
     console.log("Clicked Start record ....");
+    if (recStarted) return;
+    setRecStarted(true);
     vscode.postMessage({
       type: EditorToExtMSgType.startRecord,
       data: { verse: selectedVerse },
@@ -19,6 +23,8 @@ function Recorder({ selectedVerse }: IRecorderProps) {
 
   const handleStopRecord = () => {
     console.log("Clicked Stop record ....");
+    if (!recStarted) return;
+    setRecStarted(false);
     vscode.postMessage({
       type: EditorToExtMSgType.stopRecord,
       data: { verse: selectedVerse },
@@ -30,13 +36,21 @@ function Recorder({ selectedVerse }: IRecorderProps) {
       <button
         className="cursor-pointer flex justify-center items-center"
         onClick={() => handleStartRecord()}
+        title="Record"
       >
-        <Record classes="w-5 h-5 stroke-red-500 hover:stroke-red-700" />
+        <Record
+          classes={`${
+            recStarted && "animate-ping"
+          } w-5 h-5 stroke-red-500 hover:stroke-red-700`}
+        />
       </button>
 
       <button
-        className="cursor-pointer flex justify-center items-center"
+        className={`${
+          recStarted ? "cursor-pointer" : "pointer-events-none"
+        } flex justify-center items-center`}
         onClick={() => handleStopRecord()}
+        title="Stop"
       >
         <Stop classes="w-5 h-5  stroke-red-500 hover:stroke-red-700" />
       </button>
