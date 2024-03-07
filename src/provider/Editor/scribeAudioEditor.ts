@@ -3,8 +3,15 @@ import { storageKeys } from "../../types/storage";
 import { getNonce } from "../../utils/getNonce";
 import { readUsfm } from "./utils/readBook";
 import { processTheChapter } from "./utils/processChapter";
-import { ExttoEditorWebMsgTypes, IChapterdata } from "../../types/editor";
+import {
+  EditorToExtMSgType,
+  EditorUItoExtMsg,
+  ExttoEditorWebMsgTypes,
+  IChapterdata,
+  RecordTriggerData,
+} from "../../types/editor";
 import * as path from "path";
+import { startRecord, stopRecord } from "./record";
 
 export class ScribeAudioEditor {
   private panel: vscode.WebviewPanel | undefined;
@@ -14,6 +21,11 @@ export class ScribeAudioEditor {
   private loadedUSFMBookContent: Record<string, any>;
   private currentChapterVerses: IChapterdata[] | undefined;
   private readonly projectDirectory: vscode.Uri;
+  private recordingProcess: any;
+
+  /**
+   * Constructor
+   */
   constructor(private readonly context: vscode.ExtensionContext) {
     // starting here
     this.globalState = context.workspaceState;
@@ -65,7 +77,7 @@ export class ScribeAudioEditor {
             "value",
             value
           );
-          
+
           // conversion of path to webViewPath
           for (
             let index = 0;
@@ -100,6 +112,65 @@ export class ScribeAudioEditor {
           }
         }
       );
+
+      /**
+       * Handle recieve message from webview
+       */
+      this.panel.webview.onDidReceiveMessage(async (e: EditorUItoExtMsg) => {
+        console.log(
+          "ScribeAudioEditor.onDidReceiveMessage ======== ********* ##### ",
+          e.type
+        );
+
+        switch (e.type) {
+          case EditorToExtMSgType.startRecord: {
+            const { verse } = e.data as RecordTriggerData;
+            console.log(
+              "Start Record $$$$$$$ =====> ",
+              `${this.currentBC.bookId} ${this.currentBC.chapter} ${verse}`
+            );
+
+            const projectFileDir = await vscode.Uri.joinPath(
+              this.projectDirectory,
+              "audio",
+              "ingredients",
+              this.currentBC.bookId,
+              this.currentBC.chapter.toString(),
+              `${this.currentBC.chapter}_${verse}_1_default.wav`
+            );
+
+            console.log("projectFileDir : ", projectFileDir.fsPath);
+            
+            // TODO : This folder check needed before write 
+            // TODO : If takes - check takes exist or not , default too
+            // check if dir exist
+            // const isDirExist = await vscode.workspace.fs.stat(projectFileDir).then(
+            //   () => true,
+            //   () => false
+            // );
+
+            this.recordingProcess = startRecord(
+              projectFileDir.fsPath,
+              this.currentBC.bookId,
+              this.currentBC.chapter
+            );
+            break;
+          }
+
+          case EditorToExtMSgType.stopRecord: {
+            const { verse } = e.data as RecordTriggerData;
+            console.log(
+              "Stop Record $$$$$$$ =====> ",
+              `${this.currentBC.bookId} ${this.currentBC.chapter} ${verse}`
+            );
+            stopRecord(this.recordingProcess);
+            break;
+          }
+
+          default:
+            break;
+        }
+      });
     }
 
     // Dispose of the panel when it is closed

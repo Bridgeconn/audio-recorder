@@ -2,23 +2,13 @@ import { useEffect, useState } from "react";
 import VerseView from "./VerseView";
 import { ExttoEditorWebMsgTypes, IChapterdata } from "../../../../types/editor";
 
-const vscode = acquireVsCodeApi();
+// const vscode = acquireVsCodeApi();
 
 function App() {
   const [chapterContent, setChapterContent] = useState<IChapterdata | null>(
     null
   );
   const [selectedVerse, setSelectedVerse] = useState<number | null>(null);
-
-  // function handle post message
-  const postMessage = (type: string, data: unknown) => {
-    if (type) {
-      vscode.postMessage({
-        type: type,
-        data: data,
-      });
-    }
-  };
 
   useEffect(() => {
     const handleExtensionPostMessages = (event: MessageEvent) => {
