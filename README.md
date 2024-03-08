@@ -1,44 +1,74 @@
-## Scribe Audio Extension 🎙
+<h1 align="center">Scribe Audio Extension 🎙</h1>
 
 ---
 
-The objective of Scibe Audio Eextension is to provide audio recording features in Visual Studio Code. This extension allows users to record audio clips straight from the editor for translation purposes.
+`Scibe Audio Eextension` is to provide audio recording features in [Visual Studio Code](https://code.visualstudio.com/). This extension allows users to record audio straight from the editor for translation purposes. This extension can create audio projects of [Scripture Burrito](https://docs.burrito.bible/en/latest/) standard.
+
+![img](doc/AudioRecExtn.png)
 
 ### Main Features
 
 ---
 
 - Audio recording by using system microphone 🎙
-- Simple controls to Play ▶, Stop ⏹, Pause ⏸ and Rewind (Restart) ↺ recordings.
-- Delete 🗑 option to delete the recorded audio.
+- Simple controls to
+  - Record / Re Record 🎤
+  - Play ▶
+  - Stop ⏹
+  - Pause ⏸
+  - Rewind ↺
+  - Delete 🗑
+- Verse Level Export
+- [Scripture Burrito Standard](https://docs.burrito.bible/en/latest/)
+- User Friendly Interface
+- Ready to use for OBT
+- [USFM](https://ubsicap.github.io/usfm/) support
 
-![img](doc/AudioRecExtn.png)
-
-### Prerequisites
+### System Prerequisites
 
 ---
 
-- Node.js
+- Node.js >= 18.17.0
 - Visual Studio Code
-- Install ffmpeg and fluent-ffmpeg by using the below commands:-
+- FFMPEG
 
-  ```
-  sudo apt install ffmpeg
-  ```
+  - Install ffmpeg using the below commands:-
 
-  ```
-  npm install fluent-ffmpeg
-  ```
+    ```
+    // For Ubuntu
+
+    sudo apt install ffmpeg
+    ```
+
+    Windows and Mac
+
+    - Check for Documentation
+    - [FFMPEG official docs](https://www.ffmpeg.org/download.html)
 
 ### Future Enhancemnets
 
 ---
 
 1. Export Feature
-   - Verse Level Export
-   - Chapter Level Export (with Timestamp)
+   - Chapter Level Export (with Timestamp csv / tsv)
+   - Full Project Export
+   - Multi format export
 2. Audio Conversion
-3. Merge Multiple Audios
+3. Audio SPlit and Merge
 4. Record audio with multiple takes
+5. Import USFM for Reference
+6. Hot Keys Support
+7. Auto Transcription
+
+## Contributors
+
+[//]: contributor-faces
+<a href="https://github.com/vipinpaul"><img src="https://avatars.githubusercontent.com/u/37212471?s=48&v=4" title="yuval-hazaz" width="50" height="50"></a>
+<a href="https://github.com/sijumoncy"><img src="https://avatars.githubusercontent.com/u/72241997?s=64&v=4" title="iddan" width="50" height="50"></a>
+<a href="https://github.com/Beenamol"><img src="https://avatars.githubusercontent.com/u/86401125?s=64&v=4" title="iddan" width="50" height="50"></a>
+<a href="https://github.com/svishnu06"><img src="https://avatars.githubusercontent.com/u/24819164?v=4" title="iddan" width="50" height="50"></a>
+<a href="https://github.com/Bobbykumar706584"><img src="https://avatars.githubusercontent.com/u/55685788?v=4" title="iddan" width="50" height="50"></a>
+<a href="https://github.com/Poojanavgurukul"><img src="https://avatars.githubusercontent.com/u/34941343?v=4" title="iddan" width="50" height="50"></a>
+<a href="https://github.com/AnjumolSree"><img src="https://avatars.githubusercontent.com/u/141258024?v=4" title="iddan" width="50" height="50"></a>
 
 **Enjoy!**
