@@ -2,7 +2,7 @@
 
 ---
 
-`Scibe Audio Eextension` is to provide audio recording features in [Visual Studio Code](https://code.visualstudio.com/). This extension allows users to record audio straight from the editor for translation purposes. This extension can create audio projects of [Scripture Burrito](https://docs.burrito.bible/en/latest/) standard.
+`Scibe Audio Extension` is to provide audio recording features in [Visual Studio Code](https://code.visualstudio.com/). This extension allows users to record audio straight from the editor for translation purposes. This extension can create audio projects of [Scripture Burrito](https://docs.burrito.bible/en/latest/) standard.
 
 ![img](doc/AudioRecExtn.png)
 
