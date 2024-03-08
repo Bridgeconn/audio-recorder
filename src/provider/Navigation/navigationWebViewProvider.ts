@@ -111,6 +111,7 @@ export class NavigationWebViewProvider implements vscode.WebviewViewProvider {
    */
   private async _getMetaData() {
     this._metadata = await getProjectMeta(this._context);
+    this.updateGlobalState(storageKeys.metadataJSON,JSON.stringify(this._metadata));
   }
 
   /**

@@ -12,7 +12,7 @@ import {
 } from '../../types/editor';
 import * as path from 'path';
 import { startRecord, stopRecord } from './record';
-
+const md5 = require('md5');
 export class ScribeAudioEditor {
 	private panel: vscode.WebviewPanel | undefined;
 	private static readonly viewType = 'scribeAudioEditor';
@@ -134,7 +134,56 @@ export class ScribeAudioEditor {
 								'Stop Record $$$$$$$ =====> ',
 								`${this.currentBC.bookId} ${this.currentBC.chapter} ${verse}`,
 							);
+              console.log("Before Stop",this.recordingProcess);
 							stopRecord(this.recordingProcess);
+              console.log("After Stop",this.recordingProcess);
+              const audioFile = await vscode.Uri.joinPath(
+								this.projectDirectory,
+								'audio',
+								'ingredients',
+								this.currentBC.bookId,
+								this.currentBC.chapter.toString(),
+								`${this.currentBC.chapter}_${verse}_1_default.wav`,
+							);
+              // check if file recorded
+							const isFileExist = await vscode.workspace.fs
+              .stat(audioFile)
+              .then(
+                (value) => value,
+                () => false,
+              );
+              console.log("isFileExist",isFileExist);
+              
+              if (isFileExist) {
+                const ingredient = await path.join(
+                  'audio',
+                  'ingredients',
+                  this.currentBC.bookId,
+                  this.currentBC.chapter.toString(),
+                  `${this.currentBC.chapter}_${verse}_1_default.wav`,
+                );
+                const file = await vscode.workspace.fs.readFile(audioFile);
+                const metadata = this.getGlobalState(storageKeys.metadataJSON);
+                let meta = JSON.parse(metadata);
+                meta.ingredients[ingredient]={
+                  checksum: { md5: md5(file) },
+                  mimeType: "audio/wav",
+                  size: isFileExist?.size,
+                  scope: {},
+                };
+                
+                meta.ingredients[ingredient].scope[this.currentBC.bookId]= [`${this.currentBC.chapter}:${verse}`];
+                console.log("metadata",meta);
+                const metaFile = await vscode.Uri.joinPath(
+                  this.projectDirectory,'metadata.json');
+                const projectFileData = Buffer.from(
+                  JSON.stringify(meta, null, 4),
+                  "utf8"
+                );
+                this.updateGlobalState(storageKeys.metadataJSON,JSON.stringify(meta));
+                vscode.workspace.fs.writeFile(metaFile,projectFileData);
+              }
+              
 							// after panel init
 							this.readData(
 								this.currentBC.bookId,
@@ -162,6 +211,37 @@ export class ScribeAudioEditor {
               // Deleting the audio file
 							await vscode.workspace.fs.delete(audioFile);
 
+              // check if file recorded
+							const isFileExist = await vscode.workspace.fs
+              .stat(audioFile)
+              .then(
+                () => true,
+                () => false,
+              );
+              console.log("isFileExist",isFileExist);
+              
+              if (!isFileExist) {
+                const ingredient = await path.join(
+                  'audio',
+                  'ingredients',
+                  this.currentBC.bookId,
+                  this.currentBC.chapter.toString(),
+                  `${this.currentBC.chapter}_${verse}_1_default.wav`,
+                );
+                const metadata = this.getGlobalState(storageKeys.metadataJSON);
+                let meta = JSON.parse(metadata);
+                
+                delete meta.ingredients[ingredient];
+
+                const metaFile = await vscode.Uri.joinPath(
+                  this.projectDirectory,'metadata.json');
+                const projectFileData = Buffer.from(
+                  JSON.stringify(meta, null, 4),
+                  "utf8"
+                );
+                this.updateGlobalState(storageKeys.metadataJSON,JSON.stringify(meta));
+                vscode.workspace.fs.writeFile(metaFile,projectFileData);
+              }
 							// after panel init
 							this.readData(
 								this.currentBC.bookId,
