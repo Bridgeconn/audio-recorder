@@ -63,12 +63,12 @@
 ## Contributors
 
 [//]: contributor-faces
-<a href="https://github.com/vipinpaul"><img src="https://avatars.githubusercontent.com/u/37212471?s=48&v=4" title="yuval-hazaz" width="50" height="50"></a>
-<a href="https://github.com/sijumoncy"><img src="https://avatars.githubusercontent.com/u/72241997?s=64&v=4" title="iddan" width="50" height="50"></a>
-<a href="https://github.com/Beenamol"><img src="https://avatars.githubusercontent.com/u/86401125?s=64&v=4" title="iddan" width="50" height="50"></a>
-<a href="https://github.com/svishnu06"><img src="https://avatars.githubusercontent.com/u/24819164?v=4" title="iddan" width="50" height="50"></a>
-<a href="https://github.com/Bobbykumar706584"><img src="https://avatars.githubusercontent.com/u/55685788?v=4" title="iddan" width="50" height="50"></a>
-<a href="https://github.com/Poojanavgurukul"><img src="https://avatars.githubusercontent.com/u/34941343?v=4" title="iddan" width="50" height="50"></a>
-<a href="https://github.com/AnjumolSree"><img src="https://avatars.githubusercontent.com/u/141258024?v=4" title="iddan" width="50" height="50"></a>
+<a href="https://github.com/vipinpaul"><img src="https://avatars.githubusercontent.com/u/37212471?s=48&v=4" title="Vipin Paul" width="50" height="50"></a>
+<a href="https://github.com/sijumoncy"><img src="https://avatars.githubusercontent.com/u/72241997?s=64&v=4" title="Siju Moncy" width="50" height="50"></a>
+<a href="https://github.com/Beenamol"><img src="https://avatars.githubusercontent.com/u/86401125?s=64&v=4" title="Beena Ashish" width="50" height="50"></a>
+<a href="https://github.com/svishnu06"><img src="https://avatars.githubusercontent.com/u/24819164?v=4" title="Vishnu" width="50" height="50"></a>
+<a href="https://github.com/Bobbykumar706584"><img src="https://avatars.githubusercontent.com/u/55685788?v=4" title="Bobby" width="50" height="50"></a>
+<a href="https://github.com/Poojanavgurukul"><img src="https://avatars.githubusercontent.com/u/34941343?v=4" title="Pooja" width="50" height="50"></a>
+<a href="https://github.com/AnjumolSree"><img src="https://avatars.githubusercontent.com/u/141258024?v=4" title="Anjumol" width="50" height="50"></a>
 
 **Enjoy!**
