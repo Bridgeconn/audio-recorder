@@ -13,6 +13,7 @@ import {
 } from "./provider/Editor/scribeAudioEditor";
 import { NavigationWebViewProvider } from "./provider/Navigation/navigationWebViewProvider";
 import { storageKeys } from "./types/storage";
+import { exportAudio } from "./utils/exportAudio";
 
 // get root path of opened workspace in vscode
 const ROOT_PATH = getWorkSpaceFolder();
@@ -159,10 +160,13 @@ export function activate(context: vscode.ExtensionContext) {
             vscode.window.showInformationMessage(
               `New project initialized: ${newProjectMeta?.meta.generator.userName}'s ${newProjectMeta?.identification.name.en}`
             );
-            console.log("project DIR 1",workspaceFolder.uri);
-            
+            console.log("project DIR 1", workspaceFolder.uri);
+
             // Storing theworkspace path globally
-            context.workspaceState.update(storageKeys.workspaceDirectory, workspaceFolder.uri);
+            context.workspaceState.update(
+              storageKeys.workspaceDirectory,
+              workspaceFolder.uri
+            );
 
             // reload vscode workspace if needed
           }
@@ -240,6 +244,21 @@ export function activate(context: vscode.ExtensionContext) {
    * Register Navigation sidebar provider
    */
   context.subscriptions.push(NavigationWebViewProvider.register(context));
+
+  /**
+   * Export Verse Level Command
+   */
+  context.subscriptions.push(
+    vscode.commands.registerCommand(
+      "scribe-audio.exportVerseLevel",
+      async () => {
+        vscode.window.showInformationMessage(
+          "Project Verse Level Export Started"
+        );
+        await exportAudio({ type: "verse" });
+      }
+    )
+  );
 
   // // trigger on file create
   // context.subscriptions.push(
