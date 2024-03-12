@@ -198,6 +198,13 @@ export async function exportAudio({ type }: IExportAudio) {
     return;
   }
 
+  if (exportDirPath === workspaceFolder) {
+    vscode.window.showWarningMessage(
+      "You have selected the export directory same as project directory. Please Select a different one else It may lead to data loss."
+    );
+    return;
+  }
+
   // create project Dir in target
   projectTargetPath = path.join(exportDirPath, _projectName);
 
