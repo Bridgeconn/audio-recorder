@@ -31,8 +31,7 @@ export async function getAudioBlob(folderPath: vscode.Uri, chapter: number) {
         `${chapter}_${verseNum[1]}_1_default.${url[1]}`
       );
       audios[verseNum[1]].default = "take1";
-      // TODO
-      // fs.renameSync(path.join(filePath, chapterNum, verse), path.join(filePath, chapterNum, `${chapter}_${verseNum[1]}_1_default.mp3`));
+      vscode.workspace.fs.rename(vscode.Uri.joinPath(folderPath, fileName),audios[verseNum[1]].take1);
     }
   });
   console.log("audios", audios);
