@@ -4,8 +4,11 @@ import * as vscode from "vscode";
 export const startRecord = (
   outputFilePath: string,
   book: string,
-  chapter: number
+  chapter: number,
+  verse:number,
+  projectName:string
 ) => {
+  
   const cmd = "ffmpeg";
   const args = [
     "-f",
@@ -13,16 +16,18 @@ export const startRecord = (
     "-i",
     "default",
     "-acodec",
-    "pcm_s16le",
+    "pcm_s24le", // PCM signed 24-bit little-endian
     "-ar",
     "48000",
     "-ac",
-    "2",
+    "1",
     "-y", // overwrite file with same name
     "-metadata",
-    `title=${book}_${chapter}`,
+    `title=${book} ${chapter}:${verse}`,
     "-metadata",
-    `artist= scribe-audio-extension`,
+    `artist= Scribe Audio Extension`,
+    "-metadata",
+    `album= ${projectName}`,
     "-metadata",
     `date=${new Date().getFullYear().toString()}`,
     outputFilePath,
