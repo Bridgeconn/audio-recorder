@@ -41,13 +41,6 @@
           "visibility": "visible",
           "icon": "$(mic)",
           "contextualTitle": "Audio Explorer"
-        },
-        {
-          "id": "audio-explorer-sidebar-options",
-          "name": "Audio Utils",
-          "visibility": "visible",
-          "icon": "$(mic)",
-          "contextualTitle": "Audio Utils"
         }
       ]
     },
@@ -64,6 +57,11 @@
       "view/title": [
         {
           "command": "scribe-audio.exportVerseLevel",
+          "when": "view == audio-explorer-sidebar",
+          "group": "ScribeAudio"
+        },
+        {
+          "command": "scribe-audio.importUSFM",
           "when": "view == audio-explorer-sidebar",
           "group": "ScribeAudio"
         }
@@ -101,6 +99,11 @@
       {
         "command": "scribe-audio.exportVerseLevel",
         "title": "Export - Verse Level",
+        "category": "ScribeAudio"
+      },
+      {
+        "command": "scribe-audio.importUSFM",
+        "title": "Import USFM's",
         "category": "ScribeAudio"
       }
     ]

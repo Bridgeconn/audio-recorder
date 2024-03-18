@@ -14,6 +14,7 @@ import {
 import { NavigationWebViewProvider } from "./provider/Navigation/navigationWebViewProvider";
 import { storageKeys } from "./types/storage";
 import { exportAudio } from "./utils/exportAudio";
+import { importUSFM } from "./utils/importUSFM";
 
 // get root path of opened workspace in vscode
 const ROOT_PATH = getWorkSpaceFolder();
@@ -256,6 +257,18 @@ export function activate(context: vscode.ExtensionContext) {
           "Project Verse Level Export Started"
         );
         await exportAudio({ type: "verse" });
+      }
+    )
+  );
+
+  /**
+   * Import USFM's Command
+   */
+  context.subscriptions.push(
+    vscode.commands.registerCommand(
+      "scribe-audio.importUSFM",
+      async () => {
+        await importUSFM(context);
       }
     )
   );
