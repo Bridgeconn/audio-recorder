@@ -2,7 +2,7 @@
 
 ---
 
-`Scibe Audio Extension` is to provide audio recording features in [Visual Studio Code](https://code.visualstudio.com/). This extension allows users to record audio straight from the editor for translation purposes. This extension can create audio projects of [Scripture Burrito](https://docs.burrito.bible/en/latest/) standard.
+`Scribe Audio Extension` is to provide audio recording features in [Visual Studio Code](https://code.visualstudio.com/). This extension allows users to record audio straight from the editor for translation purposes. This extension can create audio projects of [Scripture Burrito](https://docs.burrito.bible/en/latest/) standard.
 
 ![img](doc/AudioRecExtn.png)
 
@@ -19,10 +19,10 @@
   - Rewind ↺
   - Delete 🗑
 - Verse Level Export
+- Import [USFM](https://ubsicap.github.io/usfm/) support 
 - [Scripture Burrito Standard](https://docs.burrito.bible/en/latest/)
 - User Friendly Interface
 - Ready to use for OBT
-- [USFM](https://ubsicap.github.io/usfm/) support
 
 ### System Prerequisites
 
@@ -44,6 +44,16 @@
 
     - Check for Documentation
     - [FFMPEG official docs](https://www.ffmpeg.org/download.html)
+
+### How to Contribute (We follow Fork and merge flow)
+
+---
+
+1. Fork this repository
+2. Install dependencies with `yarn install`
+3. Install dependencies with `yarn install` for webview (inside `cd src/webview/ui/`)
+4. For building webview UI `yarn run build:all` or developing webview UI `yarn run watch`
+5. `F5` or `debug` for running vscode host development window
 
 ### Future Enhancemnets
 
