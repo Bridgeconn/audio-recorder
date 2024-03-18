@@ -152,7 +152,7 @@ export async function exportAudio({ type }: IExportAudio) {
   const workspaceFolder = await getWorkSpaceFolder();
   if (!workspaceFolder) {
     vscode.window.showErrorMessage(
-      "Workspace not found. please check your Audio Proejct is opened"
+      "Workspace not found. please check your Audio Project is opened"
     );
     return;
   }
