@@ -13,11 +13,11 @@ export const startRecord = (
     "-i",
     "default",
     "-acodec",
-    "pcm_s16le",
+    "pcm_s24le", // PCM signed 24-bit little-endian
     "-ar",
     "48000",
     "-ac",
-    "2",
+    "1",
     "-y", // overwrite file with same name
     "-metadata",
     `title=${book}_${chapter}`,
