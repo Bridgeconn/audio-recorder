@@ -4,7 +4,6 @@ import {
   ExtToNavMsg,
   ExttoNavWebMsgTypes,
   NavWebToExtMsgTypes,
-  versificationData,
 } from "../../types/navigationView";
 import { getVersification } from "./functions/getVersification";
 import { getProjectMeta } from "../../utils/getMeta";
@@ -130,9 +129,7 @@ export class NavigationWebViewProvider implements vscode.WebviewViewProvider {
       vscode.Uri.joinPath(
         this._context.extensionUri,
         "src",
-        "webview",
-        "ui",
-        "dist",
+        "webview-dist",
         "NavigationView",
         "index.js"
       )
@@ -141,9 +138,7 @@ export class NavigationWebViewProvider implements vscode.WebviewViewProvider {
       vscode.Uri.joinPath(
         this._context.extensionUri,
         "src",
-        "webview",
-        "ui",
-        "dist",
+        "webview-dist",
         "NavigationView",
         "index.css"
       )

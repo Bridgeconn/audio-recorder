@@ -17,6 +17,6 @@ export default defineConfig({
         assetFileNames: `[name].[ext]`,
       },
     },
-    outDir: appToBuild ? `dist/${appToBuild}` : "dist",
+    outDir: appToBuild ? `../../webview-dist/${appToBuild}` : "../../webview-dist/",
   },
 });

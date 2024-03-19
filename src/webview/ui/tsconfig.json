@@ -20,6 +20,13 @@
     "noUnusedParameters": true,
     "noFallthroughCasesInSwitch": true
   },
-  "include": ["src"],
+  "exclude": ["build"],
+  "include": [
+    "src/*",
+    "src/AudioEditorView/AudioEditorView.tsx",
+    "src/AudioEditorView/index.tsx",
+    "src/NavigationView/NavigationView.tsx",
+    "src/NavigationView/index.tsx",
+],
   "references": [{ "path": "./tsconfig.node.json" }]
 }

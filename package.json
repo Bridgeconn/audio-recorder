@@ -1,9 +1,9 @@
 {
   "name": "scribe-audio",
-  "displayName": "scribe-audio",
+  "displayName": "Scribe Audio Recorder",
   "description": "",
-  "version": "0.0.1",
-  "publisher": "scribe",
+  "version": "0.1.0",
+  "publisher": "bridgeconn",
   "engines": {
     "node": ">=18.17.0",
     "vscode": "^1.86.0"
@@ -11,8 +11,12 @@
   "categories": [
     "Other"
   ],
-  "activationEvents": [],
+  "activationEvents": ["onStartupFinished"],
   "main": "./dist/extension.js",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Bridgeconn/audio-recorder"
+  },
   "contributes": {
     "customEditors": [
       {
