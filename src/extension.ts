@@ -1,25 +1,25 @@
 // The module 'vscode' contains the VS Code extensibility API
 // Import the module and reference it with the alias vscode in your code below
-import * as vscode from "vscode";
-import { getWorkSpaceFolder, openWorkspace } from "./utils/common";
+import * as vscode from 'vscode';
+import { getWorkSpaceFolder, openWorkspace } from './utils/common';
 import {
   createNewAudioProject,
   promptAndCollectProjectDetails,
-} from "./utils/project";
+} from './utils/project';
 
 import {
   initAudioEditor,
   scribeAudioEditorInstance,
-} from "./provider/Editor/scribeAudioEditor";
-import { NavigationWebViewProvider } from "./provider/Navigation/navigationWebViewProvider";
-import { storageKeys } from "./types/storage";
-import { exportAudio } from "./utils/exportAudio";
-import { importUSFM } from "./utils/importUSFM";
+} from './provider/Editor/scribeAudioEditor';
+import { NavigationWebViewProvider } from './provider/Navigation/navigationWebViewProvider';
+import { storageKeys } from './types/storage';
+import { exportAudio } from './utils/exportAudio';
+import { importUSFM } from './utils/importUSFM';
 
 // get root path of opened workspace in vscode
 const ROOT_PATH = getWorkSpaceFolder();
 
-console.log("Root Path =========>", ROOT_PATH);
+console.log('Root Path =========>', ROOT_PATH);
 
 // prompt for select folder / get metadata from the opened dir
 // if (!ROOT_PATH) {
@@ -65,10 +65,10 @@ export function activate(context: vscode.ExtensionContext) {
   console.log('Congratulations, your extension "scribe-audio" is now active!');
 
   const helloCommand = vscode.commands.registerCommand(
-    "scribe-audio.scribeaudio",
+    'scribe-audio.scribeaudio',
     () => {
-      console.log("Hello world from Scribe Audio");
-    }
+      console.log('Hello world from Scribe Audio');
+    },
   );
 
   context.subscriptions.push(helloCommand);
@@ -78,9 +78,9 @@ export function activate(context: vscode.ExtensionContext) {
    */
   context.subscriptions.push(
     vscode.commands.registerCommand(
-      "scribe-audio.initNewAudioProject",
+      'scribe-audio.initNewAudioProject',
       async () => {
-        console.log("Called INIT Project ************** 2");
+        console.log('Called INIT Project ************** 2');
 
         // read workspace folder
         const workspaceFolder = vscode.workspace.workspaceFolders
@@ -89,32 +89,32 @@ export function activate(context: vscode.ExtensionContext) {
         if (!workspaceFolder) {
           const work = await getWorkSpaceFolder();
           console.log(
-            "inside no space found meas 00000000000000000000000",
-            work
+            'inside no space found meas 00000000000000000000000',
+            work,
           );
 
           vscode.window.showErrorMessage(
-            "No workspace folder found. Please open a folder.",
-            { modal: true }
+            'No workspace folder found. Please open a folder.',
+            { modal: true },
           );
           return;
         }
 
         vscode.window.showInformationMessage(
-          "Please wait.. Initialising New Audio Project"
+          'Please wait.. Initialising New Audio Project',
         );
-        console.log("after please wait ------------------");
+        console.log('after please wait ------------------');
 
         try {
           // function to prompt and collects inputs from user about the projects
           const projectDetails = await promptAndCollectProjectDetails();
 
-          console.log("project details ------>", projectDetails);
+          console.log('project details ------>', projectDetails);
 
           if (projectDetails) {
             const projectFilePath = await vscode.Uri.joinPath(
               workspaceFolder.uri,
-              "metadata.json"
+              'metadata.json',
             );
 
             // check fs exist - for file exist check
@@ -122,17 +122,16 @@ export function activate(context: vscode.ExtensionContext) {
               .stat(projectFilePath)
               .then(
                 () => true,
-                () => false
+                () => false,
               );
 
-            console.log("file exist : ==> ", fileExists);
+            console.log('file exist : ==> ', fileExists);
 
             // if metadata in the opened workspace path
             if (fileExists) {
               // read metadata file
-              const metaDataFile = await vscode.workspace.fs.readFile(
-                projectFilePath
-              );
+              const metaDataFile =
+                await vscode.workspace.fs.readFile(projectFilePath);
               const metaData = JSON.parse(metaDataFile.toString());
               // TODO : This can be modified later based on case sensitive
               const _existProjectName = metaData.identification.name.en;
@@ -140,11 +139,11 @@ export function activate(context: vscode.ExtensionContext) {
               // prompt confirm for delete / overwrite the existing project in the same path
               const confirmDelete = await vscode.window.showInputBox({
                 prompt: `A project named ${_existProjectName} already exists in the workspace. Type the project name to confirm deletion.`,
-                placeHolder: "Project name",
+                placeHolder: 'Project name',
               });
               if (confirmDelete !== _existProjectName) {
                 vscode.window.showErrorMessage(
-                  "Project name does not match. Project Creation Cancelled"
+                  'Project name does not match. Project Creation Cancelled',
                 );
                 return;
               }
@@ -152,32 +151,31 @@ export function activate(context: vscode.ExtensionContext) {
 
             // all checks passed - create new project
             // TODO: type of METAData
-            const newProjectMeta: any = await createNewAudioProject(
-              projectDetails
-            );
+            const newProjectMeta: any =
+              await createNewAudioProject(projectDetails);
 
-            console.log("new Projects meta ===>", projectDetails);
+            console.log('new Projects meta ===>', projectDetails);
 
             vscode.window.showInformationMessage(
-              `New project initialized: ${newProjectMeta?.meta.generator.userName}'s ${newProjectMeta?.identification.name.en}`
+              `New project initialized: ${newProjectMeta?.meta.generator.userName}'s ${newProjectMeta?.identification.name.en}`,
             );
-            console.log("project DIR 1", workspaceFolder.uri);
+            console.log('project DIR 1', workspaceFolder.uri);
 
             // Storing theworkspace path globally
             context.workspaceState.update(
               storageKeys.workspaceDirectory,
-              workspaceFolder.uri
+              workspaceFolder.uri,
             );
 
             // reload vscode workspace if needed
           }
         } catch (err) {
           vscode.window.showErrorMessage(
-            `Failed to initialize Audio project: ${err}`
+            `Failed to initialize Audio project: ${err}`,
           );
         }
-      }
-    )
+      },
+    ),
   );
 
   /**
@@ -185,20 +183,20 @@ export function activate(context: vscode.ExtensionContext) {
    */
   context.subscriptions.push(
     vscode.commands.registerCommand(
-      "scribe-audio.createNewProjectBtnClick",
+      'scribe-audio.createNewProjectBtnClick',
       async () => {
-        console.log("BUtton Clicked");
+        console.log('BUtton Clicked');
         if (!ROOT_PATH) {
           vscode.window
             .showInformationMessage(
-              "No Audio Burrito project found. You need to select a Audio Burrito project folder for your new project, or open an existing Audio Burrito project folder.",
+              'No Audio Burrito project found. You need to select a Audio Burrito project folder for your new project, or open an existing Audio Burrito project folder.',
               { modal: true },
-              "Select a Folder"
+              'Select a Folder',
             )
             .then(async (result) => {
-              if (result === "Select a Folder") {
+              if (result === 'Select a Folder') {
                 const workspaceFolder = await openWorkspace();
-                console.log("reached till here --------------", {
+                console.log('reached till here --------------', {
                   workspaceFolder,
                   result,
                 });
@@ -207,12 +205,12 @@ export function activate(context: vscode.ExtensionContext) {
                 //   "scribe-audio.initNewAudioProject"
                 // );
               } else {
-                vscode.commands.executeCommand("workbench.action.quit");
+                vscode.commands.executeCommand('workbench.action.quit');
               }
             });
         }
-      }
-    )
+      },
+    ),
   );
 
   // TODO : Implement check for, is the opened folder metadata is of AUDIO (flavor check)
@@ -229,7 +227,7 @@ export function activate(context: vscode.ExtensionContext) {
    */
   context.subscriptions.push(
     vscode.commands.registerCommand(
-      "scribe-audio.openAudioEditor",
+      'scribe-audio.openAudioEditor',
       async () => {
         // if (!scribeAudioEditorInstance) {
         //   // Create a new instance of the custom audio editor
@@ -237,8 +235,8 @@ export function activate(context: vscode.ExtensionContext) {
         // }
         // TODO : Need to checl multi instances create issue or not
         await initAudioEditor(context);
-      }
-    )
+      },
+    ),
   );
 
   /**
@@ -251,26 +249,23 @@ export function activate(context: vscode.ExtensionContext) {
    */
   context.subscriptions.push(
     vscode.commands.registerCommand(
-      "scribe-audio.exportVerseLevel",
+      'scribe-audio.exportVerseLevel',
       async () => {
         vscode.window.showInformationMessage(
-          "Project Verse Level Export Started"
+          'Project Verse Level Export Started',
         );
-        await exportAudio({ type: "verse" });
-      }
-    )
+        await exportAudio({ type: 'verse' });
+      },
+    ),
   );
 
   /**
    * Import USFM's Command
    */
   context.subscriptions.push(
-    vscode.commands.registerCommand(
-      "scribe-audio.importUSFM",
-      async () => {
-        await importUSFM(context);
-      }
-    )
+    vscode.commands.registerCommand('scribe-audio.importUSFM', async () => {
+      await importUSFM(context);
+    }),
   );
 
   // // trigger on file create
