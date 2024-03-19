@@ -1,4 +1,4 @@
-import { LanguageMetadataType } from "./language";
+import { LanguageMetadataType } from './language';
 
 export interface versification {
   name: string;

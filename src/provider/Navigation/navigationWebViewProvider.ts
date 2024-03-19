@@ -1,13 +1,13 @@
-import * as vscode from "vscode";
-import { getNonce } from "../../utils/getNonce";
+import * as vscode from 'vscode';
+import { getNonce } from '../../utils/getNonce';
 import {
   ExtToNavMsg,
   ExttoNavWebMsgTypes,
   NavWebToExtMsgTypes,
-} from "../../types/navigationView";
-import { getVersification } from "./functions/getVersification";
-import { getProjectMeta } from "../../utils/getMeta";
-import { storageKeys } from "../../types/storage";
+} from '../../types/navigationView';
+import { getVersification } from './functions/getVersification';
+import { getProjectMeta } from '../../utils/getMeta';
+import { storageKeys } from '../../types/storage';
 
 export class NavigationWebViewProvider implements vscode.WebviewViewProvider {
   /**
@@ -17,11 +17,11 @@ export class NavigationWebViewProvider implements vscode.WebviewViewProvider {
   public static register(context: vscode.ExtensionContext): vscode.Disposable {
     return vscode.window.registerWebviewViewProvider(
       NavigationWebViewProvider.viewType,
-      new NavigationWebViewProvider(context)
+      new NavigationWebViewProvider(context),
     );
   }
 
-  private static readonly viewType = "audio-explorer-sidebar";
+  private static readonly viewType = 'audio-explorer-sidebar';
 
   private _webviewView: vscode.WebviewView | undefined;
   private _context: vscode.ExtensionContext;
@@ -38,7 +38,7 @@ export class NavigationWebViewProvider implements vscode.WebviewViewProvider {
   public async resolveWebviewView(
     webviewPanel: vscode.WebviewView,
     ctx: vscode.WebviewViewResolveContext,
-    _token: vscode.CancellationToken
+    _token: vscode.CancellationToken,
   ): Promise<void> {
     webviewPanel.webview.options = {
       enableScripts: true,
@@ -51,18 +51,16 @@ export class NavigationWebViewProvider implements vscode.WebviewViewProvider {
      */
     webviewPanel.webview.onDidReceiveMessage(
       async (e: { type: NavWebToExtMsgTypes; data: unknown }) => {
-        console.log(
-          "NavigationWebViewProvider.onDidReceiveMessage ======== 000 111 222 333 ",
-          e.type
-        );
-
         switch (e.type) {
           case NavWebToExtMsgTypes.FetchVersification: {
             // TODO : Change the versifcation to constructor on load and keep the data in storage
             const versification =
               this._metadata && (await getVersification(this._metadata));
             if (versification) {
-              this.updateGlobalState(storageKeys.versification, JSON.stringify(versification));
+              this.updateGlobalState(
+                storageKeys.versification,
+                JSON.stringify(versification),
+              );
               this.postMessage(webviewPanel.webview, {
                 type: ExttoNavWebMsgTypes.VersificationData,
                 data: versification,
@@ -72,7 +70,6 @@ export class NavigationWebViewProvider implements vscode.WebviewViewProvider {
           }
 
           case NavWebToExtMsgTypes.BCSelection: {
-            // console.log("BC Selection =====> ", e.data);
             this.updateGlobalState(storageKeys.currentBC, e.data);
             vscode.commands.executeCommand('scribe-audio.openAudioEditor');
             break;
@@ -81,7 +78,7 @@ export class NavigationWebViewProvider implements vscode.WebviewViewProvider {
           default:
             break;
         }
-      }
+      },
     );
 
     this._webviewView = webviewPanel;
@@ -99,7 +96,7 @@ export class NavigationWebViewProvider implements vscode.WebviewViewProvider {
     commands.forEach((command) => {
       if (!registeredCommands.includes(command.command)) {
         this._context?.subscriptions.push(
-          vscode.commands.registerCommand(command.command, command.handler)
+          vscode.commands.registerCommand(command.command, command.handler),
         );
       }
     });
@@ -110,7 +107,10 @@ export class NavigationWebViewProvider implements vscode.WebviewViewProvider {
    */
   private async _getMetaData() {
     this._metadata = await getProjectMeta(this._context);
-    this.updateGlobalState(storageKeys.metadataJSON,JSON.stringify(this._metadata));
+    this.updateGlobalState(
+      storageKeys.metadataJSON,
+      JSON.stringify(this._metadata),
+    );
   }
 
   /**
@@ -128,20 +128,20 @@ export class NavigationWebViewProvider implements vscode.WebviewViewProvider {
     const scriptUri = webview.asWebviewUri(
       vscode.Uri.joinPath(
         this._context.extensionUri,
-        "src",
-        "webview-dist",
-        "NavigationView",
-        "index.js"
-      )
+        'src',
+        'webview-dist',
+        'NavigationView',
+        'index.js',
+      ),
     );
     const styleVSCodeUri = webview.asWebviewUri(
       vscode.Uri.joinPath(
         this._context.extensionUri,
-        "src",
-        "webview-dist",
-        "NavigationView",
-        "index.css"
-      )
+        'src',
+        'webview-dist',
+        'NavigationView',
+        'index.css',
+      ),
     );
 
     // Use a nonce to whitelist which scripts can be run

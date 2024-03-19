@@ -1,24 +1,21 @@
-import { useEffect, useState } from "react";
-import VerseView from "./VerseView";
-import { ExttoEditorWebMsgTypes, IChapterdata } from "../../../../types/editor";
+import { useEffect, useState } from 'react';
+import VerseView from './VerseView';
+import { ExttoEditorWebMsgTypes, IChapterdata } from '../../../../types/editor';
 
 // const vscode = acquireVsCodeApi();
 
 function App() {
   const [chapterContent, setChapterContent] = useState<IChapterdata | null>(
-    null
+    null,
   );
   const [selectedVerse, setSelectedVerse] = useState<number | null>(null);
 
   useEffect(() => {
     const handleExtensionPostMessages = (event: MessageEvent) => {
-      console.log("listened event in Editor UI  : ", event);
       const { type, data } = event.data;
       switch (type) {
         case ExttoEditorWebMsgTypes.ChapterData: {
           // processed vesification data from workspace dir
-          console.log("data loading",data[0]);
-          
           setChapterContent(data[0]);
           break;
         }
@@ -29,11 +26,11 @@ function App() {
     };
 
     // add listener for the event
-    window.addEventListener("message", handleExtensionPostMessages);
+    window.addEventListener('message', handleExtensionPostMessages);
 
     return () => {
       // clean up event listener
-      window.removeEventListener("message", handleExtensionPostMessages);
+      window.removeEventListener('message', handleExtensionPostMessages);
     };
   }, []);
 

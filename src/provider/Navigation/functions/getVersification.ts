@@ -1,11 +1,11 @@
-import * as vscode from "vscode";
+import * as vscode from 'vscode';
 import {
   IVersification,
   VersificationMaxVerseType,
-} from "../../../types/versification";
+} from '../../../types/versification';
 
 export const getVersification = async (
-  metadata: Record<string, any>
+  metadata: Record<string, any>,
 ): Promise<IVersification | undefined> => {
   let _currentVersification: IVersification = {
     mappedVerses: {},
@@ -14,23 +14,22 @@ export const getVersification = async (
 
   const workspaceRootUri = vscode.workspace.workspaceFolders?.[0].uri;
   if (!workspaceRootUri) {
-    vscode.window.showErrorMessage("Workspace not opened");
+    vscode.window.showErrorMessage('Workspace not opened');
     return;
   }
 
   const versificationUri = vscode.Uri.joinPath(
     workspaceRootUri,
-    "audio",
-    "ingredients",
-    "versification.json"
+    'audio',
+    'ingredients',
+    'versification.json',
   );
 
-  const versificationJson = await vscode.workspace.fs.readFile(
-    versificationUri
-  );
+  const versificationJson =
+    await vscode.workspace.fs.readFile(versificationUri);
   if (!versificationJson) {
     vscode.window.showErrorMessage(
-      "Versification not found. Please open valid audio workspace or creare new audio project"
+      'Versification not found. Please open valid audio workspace or creare new audio project',
     );
     return;
   }
@@ -41,7 +40,6 @@ export const getVersification = async (
     metadata?.type?.flavorType?.currentScope;
 
   if (parsedVersification && Object.keys(scope).length > 0) {
-    console.log(parsedVersification);
     Object.keys(scope).forEach((bookId) => {
       // assign scope - versification
       _currentVersification.maxVerses[

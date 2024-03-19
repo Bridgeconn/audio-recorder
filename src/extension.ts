@@ -19,8 +19,6 @@ import { importUSFM } from './utils/importUSFM';
 // get root path of opened workspace in vscode
 const ROOT_PATH = getWorkSpaceFolder();
 
-console.log('Root Path =========>', ROOT_PATH);
-
 // prompt for select folder / get metadata from the opened dir
 // if (!ROOT_PATH) {
 //   vscode.window
@@ -62,7 +60,6 @@ console.log('Root Path =========>', ROOT_PATH);
 // Your extension is activated the very first time the command is executed
 export function activate(context: vscode.ExtensionContext) {
   // context.subscriptions.push(disposable);
-  console.log('Congratulations, your extension "scribe-audio" is now active!');
 
   const helloCommand = vscode.commands.registerCommand(
     'scribe-audio.scribeaudio',
@@ -80,19 +77,11 @@ export function activate(context: vscode.ExtensionContext) {
     vscode.commands.registerCommand(
       'scribe-audio.initNewAudioProject',
       async () => {
-        console.log('Called INIT Project ************** 2');
-
         // read workspace folder
         const workspaceFolder = vscode.workspace.workspaceFolders
           ? vscode.workspace.workspaceFolders[0]
           : undefined;
         if (!workspaceFolder) {
-          const work = await getWorkSpaceFolder();
-          console.log(
-            'inside no space found meas 00000000000000000000000',
-            work,
-          );
-
           vscode.window.showErrorMessage(
             'No workspace folder found. Please open a folder.',
             { modal: true },
@@ -103,13 +92,10 @@ export function activate(context: vscode.ExtensionContext) {
         vscode.window.showInformationMessage(
           'Please wait.. Initialising New Audio Project',
         );
-        console.log('after please wait ------------------');
 
         try {
           // function to prompt and collects inputs from user about the projects
           const projectDetails = await promptAndCollectProjectDetails();
-
-          console.log('project details ------>', projectDetails);
 
           if (projectDetails) {
             const projectFilePath = await vscode.Uri.joinPath(
@@ -124,8 +110,6 @@ export function activate(context: vscode.ExtensionContext) {
                 () => true,
                 () => false,
               );
-
-            console.log('file exist : ==> ', fileExists);
 
             // if metadata in the opened workspace path
             if (fileExists) {
@@ -154,12 +138,9 @@ export function activate(context: vscode.ExtensionContext) {
             const newProjectMeta: any =
               await createNewAudioProject(projectDetails);
 
-            console.log('new Projects meta ===>', projectDetails);
-
             vscode.window.showInformationMessage(
               `New project initialized: ${newProjectMeta?.meta.generator.userName}'s ${newProjectMeta?.identification.name.en}`,
             );
-            console.log('project DIR 1', workspaceFolder.uri);
 
             // Storing theworkspace path globally
             context.workspaceState.update(
@@ -185,7 +166,6 @@ export function activate(context: vscode.ExtensionContext) {
     vscode.commands.registerCommand(
       'scribe-audio.createNewProjectBtnClick',
       async () => {
-        console.log('BUtton Clicked');
         if (!ROOT_PATH) {
           vscode.window
             .showInformationMessage(
@@ -195,15 +175,7 @@ export function activate(context: vscode.ExtensionContext) {
             )
             .then(async (result) => {
               if (result === 'Select a Folder') {
-                const workspaceFolder = await openWorkspace();
-                console.log('reached till here --------------', {
-                  workspaceFolder,
-                  result,
-                });
-
-                // vscode.commands.executeCommand(
-                //   "scribe-audio.initNewAudioProject"
-                // );
+                await openWorkspace();
               } else {
                 vscode.commands.executeCommand('workbench.action.quit');
               }

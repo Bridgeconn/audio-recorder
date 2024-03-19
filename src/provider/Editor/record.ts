@@ -1,34 +1,33 @@
-const { spawn } = require("child_process");
-import * as vscode from "vscode";
+const { spawn } = require('child_process');
+import * as vscode from 'vscode';
 
 export const startRecord = (
   outputFilePath: string,
   book: string,
   chapter: number,
-  verse:number,
-  projectName:string
+  verse: number,
+  projectName: string,
 ) => {
-  
-  const cmd = "ffmpeg";
+  const cmd = 'ffmpeg';
   const args = [
-    "-f",
-    "alsa", // TODO : this is alsa for linux -> need to fix later for wind and mac
-    "-i",
-    "default",
-    "-acodec",
-    "pcm_s24le", // PCM signed 24-bit little-endian
-    "-ar",
-    "48000",
-    "-ac",
-    "1",
-    "-y", // overwrite file with same name
-    "-metadata",
+    '-f',
+    'alsa', // TODO : this is alsa for linux -> need to fix later for wind and mac
+    '-i',
+    'default',
+    '-acodec',
+    'pcm_s24le', // PCM signed 24-bit little-endian
+    '-ar',
+    '48000',
+    '-ac',
+    '1',
+    '-y', // overwrite file with same name
+    '-metadata',
     `title=${book} ${chapter}:${verse}`,
-    "-metadata",
+    '-metadata',
     `artist= Scribe Audio Extension`,
-    "-metadata",
+    '-metadata',
     `album= ${projectName}`,
-    "-metadata",
+    '-metadata',
     `date=${new Date().getFullYear().toString()}`,
     outputFilePath,
   ];
@@ -44,8 +43,7 @@ export const startRecord = (
   //   console.error(`stderr: ${data}`);
   // });
 
-  recordingProcess.on("close", (code:unknown) => {
-    console.log(`child process exit ${code}`);
+  recordingProcess.on('close', (code: unknown) => {
     recordingProcess = null;
   });
 
@@ -57,11 +55,11 @@ export const startRecord = (
  */
 export const stopRecord = (recordingProcess: any) => {
   if (recordingProcess) {
-    recordingProcess.kill("SIGINT");
-    recordingProcess.on("exit", () => {
+    recordingProcess.kill('SIGINT');
+    recordingProcess.on('exit', () => {
       recordingProcess = null;
     });
   } else {
-    console.log("No recording to stop");
+    console.error('No recording to stop');
   }
 };
