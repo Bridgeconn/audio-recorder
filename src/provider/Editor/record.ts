@@ -44,7 +44,7 @@ export const startRecord = (
   //   console.error(`stderr: ${data}`);
   // });
 
-  recordingProcess.on("close", (code) => {
+  recordingProcess.on("close", (code:unknown) => {
     console.log(`child process exit ${code}`);
     recordingProcess = null;
   });

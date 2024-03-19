@@ -86,7 +86,8 @@ export class ScribeAudioEditor {
             const { verse } = e.data as RecordTriggerData;
             console.log(
               "Start Record $$$$$$$%%%%%%%%%%%%%%%%%%%%%%%%%%% =====> ",
-              `${this.currentBC.bookId} ${this.currentBC.chapter} ${verse}`);
+              `${this.currentBC.bookId} ${this.currentBC.chapter} ${verse}`
+            );
 
             const projectDir = await vscode.Uri.joinPath(
               this.projectDirectory,
@@ -115,7 +116,8 @@ export class ScribeAudioEditor {
               this.currentBC.bookId,
               this.currentBC.chapter,
               verse,
-              this.metadataJson?.identification?.name?.en || 'Scribe Extension\'s Project'
+              this.metadataJson?.identification?.name?.en ||
+                "Scribe Extension's Project"
             );
             break;
           }
@@ -144,7 +146,7 @@ export class ScribeAudioEditor {
             );
             console.log("isFileExist", isFileExist);
 
-            if (isFileExist) {
+            if (isFileExist && typeof isFileExist !== 'boolean') {
               const ingredient = await path.join(
                 "audio",
                 "ingredients",
@@ -363,10 +365,12 @@ export class ScribeAudioEditor {
     // }
     if (this.panel?.webview) {
       setTimeout(() => {
-        this.postMessage(this.panel?.webview, {
-          type: ExttoEditorWebMsgTypes.ChapterData,
-          data: this.currentChapterVerses,
-        });
+        if (this.panel?.webview) {
+          this.postMessage(this.panel?.webview, {
+            type: ExttoEditorWebMsgTypes.ChapterData,
+            data: this.currentChapterVerses,
+          });
+        }
       }, 500);
     }
     return chapterData;
@@ -410,9 +414,7 @@ export class ScribeAudioEditor {
       vscode.Uri.joinPath(
         this.context.extensionUri,
         "src",
-        "webview",
-        "ui",
-        "dist",
+        "webview-dist",
         "AudioEditorView",
         "index.js"
       )
@@ -421,9 +423,7 @@ export class ScribeAudioEditor {
       vscode.Uri.joinPath(
         this.context.extensionUri,
         "src",
-        "webview",
-        "ui",
-        "dist",
+        "webview-dist",
         "AudioEditorView",
         "index.css"
       )

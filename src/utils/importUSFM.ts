@@ -47,7 +47,7 @@ export async function importUSFM(context: vscode.ExtensionContext) {
 	// Fetching the metadata from Global state
 	const metadata: string = context.workspaceState.get(
 		storageKeys.metadataJSON,
-	);
+	) as string;
 	const metadataJson = JSON.parse(metadata);
 	const scope: Partial<VersificationMaxVerseType> =
 		metadataJson?.type?.flavorType?.currentScope;
