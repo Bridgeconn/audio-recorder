@@ -2,7 +2,7 @@
   "name": "scribe-audio",
   "displayName": "Scribe Audio Recorder",
   "description": "Scribe Audio Extension is to provide audio recording features in Visual Studio Code. This extension allows users to record audio straight from the editor for translation purposes. This extension can create audio projects of Scripture Burrito standard.",
-  "version": "0.1.0-beta",
+  "version": "0.1.0-beta1",
   "publisher": "bridgeconn",
   "engines": {
     "node": ">=18.17.0",
