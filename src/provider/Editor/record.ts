@@ -7,6 +7,7 @@ export const startRecord = (
   chapter: number,
   verse: number,
   projectName: string,
+  userName: string,
 ) => {
   const cmd = 'ffmpeg';
   const args = [
@@ -24,9 +25,9 @@ export const startRecord = (
     '-metadata',
     `title=${book} ${chapter}:${verse}`,
     '-metadata',
-    `artist= Scribe Audio Extension`,
+    `artist=${userName}-Scribe Audio Extension`,
     '-metadata',
-    `album= ${projectName}`,
+    `album=${projectName}`,
     '-metadata',
     `date=${new Date().getFullYear().toString()}`,
     outputFilePath,
