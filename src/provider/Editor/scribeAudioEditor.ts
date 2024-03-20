@@ -106,6 +106,7 @@ export class ScribeAudioEditor {
               verse,
               this.metadataJson?.identification?.name?.en ||
                 "Scribe Extension's Project",
+              this.metadataJson?.meta.generator.userName,
             );
             break;
           }
