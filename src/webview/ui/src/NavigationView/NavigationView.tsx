@@ -1,10 +1,10 @@
-import { VSCodeButton } from "@vscode/webview-ui-toolkit/react";
-import { useEffect, useState } from "react";
+import { VSCodeButton } from '@vscode/webview-ui-toolkit/react';
+import { useEffect, useState } from 'react';
 import {
   NavWebToExtMsgTypes,
   ExttoNavWebMsgTypes,
-} from "../../../../types/navigationView";
-import { IVersification } from "../../../../types/versification";
+} from '../../../../types/navigationView';
+import { IVersification } from '../../../../types/versification';
 
 const vscode = acquireVsCodeApi();
 
@@ -22,16 +22,13 @@ function App() {
     }
   };
 
-  console.log("verss )))))))))))) == >", versificationData);
-
   useEffect(() => {
     // listen for vscode.postmessage event from extension to webview here
     if (!versificationData) {
-      postMessage(NavWebToExtMsgTypes.FetchVersification, "");
+      postMessage(NavWebToExtMsgTypes.FetchVersification, '');
     }
 
     const handleExtensionPostMessages = (event: MessageEvent) => {
-      console.log("listened event in Nav UI  : ", event);
       const { type, data } = event.data;
       switch (type) {
         case ExttoNavWebMsgTypes.VersificationData: {
@@ -46,11 +43,11 @@ function App() {
     };
 
     // add listener for the event
-    window.addEventListener("message", handleExtensionPostMessages);
+    window.addEventListener('message', handleExtensionPostMessages);
 
     return () => {
       // clean up event listener
-      window.removeEventListener("message", handleExtensionPostMessages);
+      window.removeEventListener('message', handleExtensionPostMessages);
     };
   }, []);
 
@@ -78,7 +75,7 @@ function App() {
                   ))}
                 </div>
               </details>
-            )
+            ),
           )}
       </div>
     </div>

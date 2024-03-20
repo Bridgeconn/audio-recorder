@@ -1,12 +1,12 @@
-import type { WebviewApi } from "vscode-webview";
-import { EditorUItoExtMsg } from "../../../../types/editor";
+import type { WebviewApi } from 'vscode-webview';
+import { EditorUItoExtMsg } from '../../../../types/editor';
 
 class VsCodeWebInstanceProvider {
   private readonly vsCodeApi: WebviewApi<unknown> | undefined;
 
   constructor() {
     // ensure vscodeapi is not inited in the current web view
-    if (typeof acquireVsCodeApi === "function") {
+    if (typeof acquireVsCodeApi === 'function') {
       this.vsCodeApi = acquireVsCodeApi();
     }
   }

@@ -1,21 +1,21 @@
-import * as vscode from "vscode";
-import { storageKeys } from "../../types/storage";
-import { getNonce } from "../../utils/getNonce";
-import { readUsfm } from "./utils/readBook";
-import { processTheChapter } from "./utils/processChapter";
+import * as vscode from 'vscode';
+import { storageKeys } from '../../types/storage';
+import { getNonce } from '../../utils/getNonce';
+import { readUsfm } from './utils/readBook';
+import { processTheChapter } from './utils/processChapter';
 import {
   EditorToExtMSgType,
   EditorUItoExtMsg,
   ExttoEditorWebMsgTypes,
   IChapterdata,
   RecordTriggerData,
-} from "../../types/editor";
-import * as path from "path";
-import { startRecord, stopRecord } from "./record";
-const md5 = require("md5");
+} from '../../types/editor';
+import * as path from 'path';
+import { startRecord, stopRecord } from './record';
+const md5 = require('md5');
 export class ScribeAudioEditor {
   private panel: vscode.WebviewPanel | undefined;
-  private static readonly viewType = "scribeAudioEditor";
+  private static readonly viewType = 'scribeAudioEditor';
   private readonly globalState: vscode.Memento;
   private readonly currentBC: { bookId: string; chapter: number };
   private loadedUSFMBookContent: Record<string, any>;
@@ -33,7 +33,7 @@ export class ScribeAudioEditor {
     this.currentBC = this.getGlobalState(storageKeys.currentBC);
     this.projectDirectory = this.getGlobalState(storageKeys.workspaceDirectory);
     this.loadedUSFMBookContent = this.getGlobalState(
-      storageKeys.loadedUSFMContent
+      storageKeys.loadedUSFMContent,
     );
     this.metadataJson = this.getGlobalState(storageKeys.metadataJSON);
     this.metadataJson = JSON.parse(this.metadataJson);
@@ -41,7 +41,7 @@ export class ScribeAudioEditor {
     // parse if loadedUSFM have content
     if (
       this.loadedUSFMBookContent &&
-      typeof this.loadedUSFMBookContent === "string"
+      typeof this.loadedUSFMBookContent === 'string'
     ) {
       this.loadedUSFMBookContent = JSON.parse(this.loadedUSFMBookContent);
     }
@@ -54,14 +54,14 @@ export class ScribeAudioEditor {
       {
         enableScripts: true,
         localResourceRoots: [
-          vscode.Uri.file(path.join(context.extensionPath, "src")),
+          vscode.Uri.file(path.join(context.extensionPath, 'src')),
           vscode.Uri.file(
             path.join(
-              vscode.workspace.workspaceFolders?.[0].uri.fsPath as string
-            )
+              vscode.workspace.workspaceFolders?.[0].uri.fsPath as string,
+            ),
           ),
         ],
-      }
+      },
     );
 
     // set UI here
@@ -75,37 +75,25 @@ export class ScribeAudioEditor {
        * Handle recieve message from webview
        */
       this.panel.webview.onDidReceiveMessage(async (e: EditorUItoExtMsg) => {
-        console.log(
-          "ScribeAudioEditor.onDidReceiveMessage ======== ********* ##### ",
-          e.type,
-          e.data
-        );
-
         switch (e.type) {
           case EditorToExtMSgType.startRecord: {
             const { verse } = e.data as RecordTriggerData;
-            console.log(
-              "Start Record $$$$$$$%%%%%%%%%%%%%%%%%%%%%%%%%%% =====> ",
-              `${this.currentBC.bookId} ${this.currentBC.chapter} ${verse}`
-            );
-
             const projectDir = await vscode.Uri.joinPath(
               this.projectDirectory,
-              "audio",
-              "ingredients",
+              'audio',
+              'ingredients',
               this.currentBC.bookId,
-              this.currentBC.chapter.toString()
+              this.currentBC.chapter.toString(),
             );
             const projectFileDir = await vscode.Uri.joinPath(
               projectDir,
-              `${this.currentBC.chapter}_${verse}_1_default.wav`
+              `${this.currentBC.chapter}_${verse}_1_default.wav`,
             );
-            console.log("projectFileDir : ", projectFileDir.fsPath);
 
             // check if dir exist
             const isDirExist = await vscode.workspace.fs.stat(projectDir).then(
               () => true,
-              () => false
+              () => false,
             );
             if (!isDirExist) {
               await vscode.workspace.fs.createDirectory(projectDir);
@@ -117,49 +105,42 @@ export class ScribeAudioEditor {
               this.currentBC.chapter,
               verse,
               this.metadataJson?.identification?.name?.en ||
-                "Scribe Extension's Project"
+                "Scribe Extension's Project",
             );
             break;
           }
 
           case EditorToExtMSgType.stopRecord: {
             const { verse } = e.data as RecordTriggerData;
-            console.log(
-              "Stop Record $$$$$$$ =====> ",
-              `${this.currentBC.bookId} ${this.currentBC.chapter} ${verse}`
-            );
-            console.log("Before Stop", this.recordingProcess);
             stopRecord(this.recordingProcess);
-            console.log("After Stop", this.recordingProcess);
             const audioFile = await vscode.Uri.joinPath(
               this.projectDirectory,
-              "audio",
-              "ingredients",
+              'audio',
+              'ingredients',
               this.currentBC.bookId,
               this.currentBC.chapter.toString(),
-              `${this.currentBC.chapter}_${verse}_1_default.wav`
+              `${this.currentBC.chapter}_${verse}_1_default.wav`,
             );
             // check if file recorded
             const isFileExist = await vscode.workspace.fs.stat(audioFile).then(
               (value) => value,
-              () => false
+              () => false,
             );
-            console.log("isFileExist", isFileExist);
 
             if (isFileExist && typeof isFileExist !== 'boolean') {
               const ingredient = await path.join(
-                "audio",
-                "ingredients",
+                'audio',
+                'ingredients',
                 this.currentBC.bookId,
                 this.currentBC.chapter.toString(),
-                `${this.currentBC.chapter}_${verse}_1_default.wav`
+                `${this.currentBC.chapter}_${verse}_1_default.wav`,
               );
               const file = await vscode.workspace.fs.readFile(audioFile);
               const metadata = this.getGlobalState(storageKeys.metadataJSON);
               let meta = JSON.parse(metadata);
               meta.ingredients[ingredient] = {
                 checksum: { md5: md5(file) },
-                mimeType: "audio/wav",
+                mimeType: 'audio/wav',
                 size: isFileExist?.size,
                 scope: {},
               };
@@ -167,18 +148,17 @@ export class ScribeAudioEditor {
               meta.ingredients[ingredient].scope[this.currentBC.bookId] = [
                 `${this.currentBC.chapter}:${verse}`,
               ];
-              console.log("metadata", meta);
               const metaFile = await vscode.Uri.joinPath(
                 this.projectDirectory,
-                "metadata.json"
+                'metadata.json',
               );
               const projectFileData = Buffer.from(
                 JSON.stringify(meta, null, 4),
-                "utf8"
+                'utf8',
               );
               this.updateGlobalState(
                 storageKeys.metadataJSON,
-                JSON.stringify(meta)
+                JSON.stringify(meta),
               );
               vscode.workspace.fs.writeFile(metaFile, projectFileData);
             }
@@ -190,18 +170,14 @@ export class ScribeAudioEditor {
 
           case EditorToExtMSgType.deleteAudio: {
             const { verse } = e.data as RecordTriggerData;
-            console.log(
-              "Delete the audio",
-              `${this.currentBC.bookId} ${this.currentBC.chapter} ${verse}`
-            );
             // deleteAudio(this.recordingProcess);
             const audioFile = await vscode.Uri.joinPath(
               this.projectDirectory,
-              "audio",
-              "ingredients",
+              'audio',
+              'ingredients',
               this.currentBC.bookId,
               this.currentBC.chapter.toString(),
-              `${this.currentBC.chapter}_${verse}_1_default.wav`
+              `${this.currentBC.chapter}_${verse}_1_default.wav`,
             );
 
             // Deleting the audio file
@@ -210,17 +186,16 @@ export class ScribeAudioEditor {
             // check if file recorded
             const isFileExist = await vscode.workspace.fs.stat(audioFile).then(
               () => true,
-              () => false
+              () => false,
             );
-            console.log("isFileExist", isFileExist);
 
             if (!isFileExist) {
               const ingredient = await path.join(
-                "audio",
-                "ingredients",
+                'audio',
+                'ingredients',
                 this.currentBC.bookId,
                 this.currentBC.chapter.toString(),
-                `${this.currentBC.chapter}_${verse}_1_default.wav`
+                `${this.currentBC.chapter}_${verse}_1_default.wav`,
               );
               const metadata = this.getGlobalState(storageKeys.metadataJSON);
               let meta = JSON.parse(metadata);
@@ -229,15 +204,15 @@ export class ScribeAudioEditor {
 
               const metaFile = await vscode.Uri.joinPath(
                 this.projectDirectory,
-                "metadata.json"
+                'metadata.json',
               );
               const projectFileData = Buffer.from(
                 JSON.stringify(meta, null, 4),
-                "utf8"
+                'utf8',
               );
               this.updateGlobalState(
                 storageKeys.metadataJSON,
-                JSON.stringify(meta)
+                JSON.stringify(meta),
               );
               vscode.workspace.fs.writeFile(metaFile, projectFileData);
             }
@@ -268,26 +243,15 @@ export class ScribeAudioEditor {
    * Read the chapter content (USFM and Audio)
    */
   private async readData(book: string, chapter: number) {
-    console.log("inside read data");
-
     let versificationData;
     // read only once while changing book
-    console.log(
-      "LOaded status of book : ================>",
-      !!this.loadedUSFMBookContent?.[book],
-      book
-    );
-
     const usfmData =
       this.loadedUSFMBookContent && this.loadedUSFMBookContent[book]
         ? this.loadedUSFMBookContent[book]
         : await readUsfm(book);
-    console.log("usfmdata", usfmData);
 
     if (!usfmData) {
       const versification = this.getGlobalState(storageKeys.versification);
-      console.log("versification", versification);
-
       const versificationJSON = JSON.parse(versification);
       versificationData = versificationJSON.maxVerses[book];
     } else {
@@ -297,39 +261,21 @@ export class ScribeAudioEditor {
           this.loadedUSFMBookContent = {};
         }
         this.loadedUSFMBookContent[book] = usfmData;
-        console.log(
-          "in SAVE AFTER PARSE 00000000000000000000000000000000000000000"
-        );
       }
       this.updateGlobalState(
         storageKeys.loadedUSFMContent,
-        JSON.stringify(this.loadedUSFMBookContent)
-      );
-      console.log(
-        "in SAVE AFter load 000000011111111111111122222222222222222222233333333333333"
+        JSON.stringify(this.loadedUSFMBookContent),
       );
     }
-    console.log(
-      "SCRIBE PANLE ===================> ",
-      vscode.Uri.file("/myurl"),
-      " : :::::: ===== ",
-      this.panel?.webview.asWebviewUri(vscode.Uri.file("/myurl"))
-    );
 
     const chapterData = await processTheChapter(
       book,
       chapter,
       usfmData,
       versificationData,
-      this.projectDirectory
+      this.projectDirectory,
     );
     this.currentChapterVerses = chapterData;
-    console.log(
-      "currentChapterVerses",
-      this.currentChapterVerses,
-      "value",
-      chapterData
-    );
 
     // conversion of path to webViewPath
     for (
@@ -342,17 +288,17 @@ export class ScribeAudioEditor {
       if (currentverseAudioObj?.take1) {
         // currentverseAudioObj.take1 = audioBlob;
         currentverseAudioObj.take1 = await this.convertToAsWebViewUri(
-          currentverseAudioObj.take1 as vscode.Uri
+          currentverseAudioObj.take1 as vscode.Uri,
         );
       }
       if (currentverseAudioObj?.take2) {
         currentverseAudioObj.take2 = await this.convertToAsWebViewUri(
-          currentverseAudioObj.take2 as vscode.Uri
+          currentverseAudioObj.take2 as vscode.Uri,
         );
       }
       if (currentverseAudioObj?.take3) {
         currentverseAudioObj.take3 = await this.convertToAsWebViewUri(
-          currentverseAudioObj.take3 as vscode.Uri
+          currentverseAudioObj.take3 as vscode.Uri,
         );
       }
     }
@@ -413,20 +359,20 @@ export class ScribeAudioEditor {
     const scriptUri = webview.asWebviewUri(
       vscode.Uri.joinPath(
         this.context.extensionUri,
-        "src",
-        "webview-dist",
-        "AudioEditorView",
-        "index.js"
-      )
+        'src',
+        'webview-dist',
+        'AudioEditorView',
+        'index.js',
+      ),
     );
     const styleVSCodeUri = webview.asWebviewUri(
       vscode.Uri.joinPath(
         this.context.extensionUri,
-        "src",
-        "webview-dist",
-        "AudioEditorView",
-        "index.css"
-      )
+        'src',
+        'webview-dist',
+        'AudioEditorView',
+        'index.css',
+      ),
     );
 
     // Use a nonce to whitelist which scripts can be run

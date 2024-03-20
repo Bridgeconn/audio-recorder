@@ -21,12 +21,17 @@ app.get('/start', (req, res) => {
 
     const cmd = 'ffmpeg';
     const args = [
-      '-f', 'alsa',
-      '-i', 'default',
-      '-acodec', 'pcm_s16le',
-      '-ar', '44100',
-      '-ac', '2',
-      outputFile
+      '-f',
+      'alsa',
+      '-i',
+      'default',
+      '-acodec',
+      'pcm_s16le',
+      '-ar',
+      '44100',
+      '-ac',
+      '2',
+      outputFile,
     ];
 
     recordingProcess = spawn(cmd, args);
@@ -42,7 +47,7 @@ app.get('/start', (req, res) => {
     recordingProcess.on('close', (code) => {
       console.log(`child process exit ${code}`);
       recordingProcess = null;
-      outputFile = 'output.wav'; 
+      outputFile = 'output.wav';
     });
 
     res.send('Recording started');
@@ -57,7 +62,7 @@ app.get('/stop', (req, res) => {
     recordingProcess.on('exit', () => {
       res.send('Recording stopped');
       recordingProcess = null;
-      outputFile = 'output.wav'; 
+      outputFile = 'output.wav';
     });
   } else {
     res.send('No recording to stop');

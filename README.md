@@ -19,7 +19,7 @@
   - Rewind ↺
   - Delete 🗑
 - Verse Level Export
-- Import [USFM](https://ubsicap.github.io/usfm/) support 
+- Import [USFM](https://ubsicap.github.io/usfm/) support
 - [Scripture Burrito Standard](https://docs.burrito.bible/en/latest/)
 - User Friendly Interface
 - Ready to use for OBT
@@ -73,6 +73,7 @@
 ## Contributors
 
 [//]: contributor-faces
+
 <a href="https://github.com/vipinpaul"><img src="https://avatars.githubusercontent.com/u/37212471?s=48&v=4" title="Vipin Paul" width="50" height="50"></a>
 <a href="https://github.com/sijumoncy"><img src="https://avatars.githubusercontent.com/u/72241997?s=64&v=4" title="Siju Moncy" width="50" height="50"></a>
 <a href="https://github.com/Beenamol"><img src="https://avatars.githubusercontent.com/u/86401125?s=64&v=4" title="Beena Ashish" width="50" height="50"></a>

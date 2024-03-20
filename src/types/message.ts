@@ -2,7 +2,6 @@
 
 // // import { versificationData } from "./navigationView";
 
-
 // // Type of messages from Extension to Webview
 // const ExtMessageType = {
 //     Info: "info",
@@ -61,7 +60,6 @@
 
 // // export type WebviewMessage = WebviewReadyMessage | WebviewPrepareMessage | WebviewDataMessage |  WebviewErrorMessage;
 
-
 // export class WebviewReadyMessage {
 //     type = WebviewMessageType.Ready;
 // }
@@ -70,8 +68,8 @@
 //     type = WebviewMessageType.Prepare;
 // }
 
-// export interface WebviewDataData { 
-    
+// export interface WebviewDataData {
+
 // }
 
 // // export class WebviewDataMessage {
@@ -90,5 +88,3 @@
 
 // // Type of post message funtion
 // export type postMessage = (message: WebviewMessage) => void;
-
-

@@ -1,10 +1,7 @@
-import * as vscode from "vscode";
+import * as vscode from 'vscode';
 
 export async function getAudioBlob(folderPath: vscode.Uri, chapter: number) {
-  console.log("folderPath ````````````########## ", folderPath);
-
   const audioFiles = await vscode.workspace.fs.readDirectory(folderPath);
-  console.log("audioFiles", audioFiles);
   const audios: Record<string, any> = {};
   // {
   //   1:{take1:,take2:,take3:,default:}
@@ -12,15 +9,14 @@ export async function getAudioBlob(folderPath: vscode.Uri, chapter: number) {
   // }
   audioFiles.forEach(async (file) => {
     const fileName = file[0];
-    const url = fileName.split(".");
-    const verseNum = url[0].split("_");
-    console.log(verseNum);
+    const url = fileName.split('.');
+    const verseNum = url[0].split('_');
     audios[verseNum[1]] = { ...audios[verseNum[1]] };
     if (verseNum[2]) {
       const take = `take${verseNum[2]}`;
       // setting the audio file path
       audios[verseNum[1]][take] = vscode.Uri.joinPath(folderPath, fileName);
-      if (verseNum[3] === "default") {
+      if (verseNum[3] === 'default') {
         audios[verseNum[1]].default = take;
       }
     } else {
@@ -28,13 +24,15 @@ export async function getAudioBlob(folderPath: vscode.Uri, chapter: number) {
       // replace url with `${chapter}_${verseNum[1]}_1_default.mp3`
       audios[verseNum[1]].take1 = vscode.Uri.joinPath(
         folderPath,
-        `${chapter}_${verseNum[1]}_1_default.${url[1]}`
+        `${chapter}_${verseNum[1]}_1_default.${url[1]}`,
       );
-      audios[verseNum[1]].default = "take1";
-      vscode.workspace.fs.rename(vscode.Uri.joinPath(folderPath, fileName),audios[verseNum[1]].take1);
+      audios[verseNum[1]].default = 'take1';
+      vscode.workspace.fs.rename(
+        vscode.Uri.joinPath(folderPath, fileName),
+        audios[verseNum[1]].take1,
+      );
     }
   });
-  console.log("audios", audios);
   return audios;
 }
 
@@ -43,19 +41,19 @@ export async function processTheChapter(
   chapter: number,
   usfmData: any,
   versifcationData: string[],
-  projectDirectory: vscode.Uri
+  projectDirectory: vscode.Uri,
   // convertToAsWebViewUri: (url: vscode.Uri) => Promise<vscode.Uri | undefined>,
 ) {
   const folder = vscode.Uri.joinPath(
     projectDirectory,
-    "audio",
-    "ingredients",
+    'audio',
+    'ingredients',
     book,
-    chapter.toString()
+    chapter.toString(),
   );
   const audioFileExists = await vscode.workspace.fs.stat(folder).then(
     () => true,
-    () => false
+    () => false,
   );
   let audioData: Record<string, any> = {};
   if (audioFileExists) {
@@ -72,9 +70,9 @@ export async function processTheChapter(
     let verses: { verseNumber: number; verseText: string; audio: any }[] = [];
     verses.push({
       verseNumber: 0,
-      verseText: "Chapter Intro",
+      verseText: 'Chapter Intro',
       // audio: '',
-      audio: audioFileExists ? audioData[0] : "",
+      audio: audioFileExists ? audioData[0] : '',
     });
     for (let v = 1; v <= chapterContent.contents.length; v += 1) {
       if (chapterContent.contents[v]?.verseNumber) {
@@ -84,7 +82,7 @@ export async function processTheChapter(
           // audio: '',
           audio: audioFileExists
             ? audioData[parseInt(chapterContent.contents[v]?.verseNumber, 10)]
-            : "",
+            : '',
         });
       }
     }
@@ -98,16 +96,16 @@ export async function processTheChapter(
     let verses: { verseNumber: number; verseText: string; audio: any }[] = [];
     verses.push({
       verseNumber: 0,
-      verseText: "Chapter Intro",
+      verseText: 'Chapter Intro',
       // audio: '',
-      audio: audioFileExists ? audioData[0] : "",
+      audio: audioFileExists ? audioData[0] : '',
     });
     for (let v = 1; v <= parseInt(versifcationData[chapter - 1], 10); v += 1) {
       verses.push({
         verseNumber: v,
-        verseText: "",
+        verseText: '',
         // audio: '',
-        audio: audioFileExists ? audioData[v] : "",
+        audio: audioFileExists ? audioData[v] : '',
       });
     }
     contents = contents.concat(verses);

@@ -1,15 +1,15 @@
-import { LanguageMetadataType } from "../types/language";
-import { AudioProjectCreationDetails } from "../types/project";
-import * as vscode from "vscode";
-import { LanguageCodes } from "./languageCodes";
-import packageInfo from "../../package.json";
-import { v5 as uuidv5 } from "uuid";
-import { environment } from "../environment";
-import moment from "moment";
-import { schemes } from "./versification";
-import { Bible } from "../types/versification";
+import { LanguageMetadataType } from '../types/language';
+import { AudioProjectCreationDetails } from '../types/project';
+import * as vscode from 'vscode';
+import { LanguageCodes } from './languageCodes';
+import packageInfo from '../../package.json';
+import { v5 as uuidv5 } from 'uuid';
+import { environment } from '../environment';
+import moment from 'moment';
+import { schemes } from './versification';
+import { Bible } from '../types/versification';
 
-import * as path from "path";
+import * as path from 'path';
 
 /**
  * Function use vscode native input collection and get project details
@@ -17,31 +17,33 @@ import * as path from "path";
 export async function promptAndCollectProjectDetails(): Promise<
   AudioProjectCreationDetails | undefined
 > {
-  console.log("inside prompting ========= ");
-
   // do not modify this value
-  const projectFlavour: string = "audioTranslation";
+  const projectFlavour: string = 'audioTranslation';
 
   // project name prompt
   const projectName = await vscode.window.showInputBox({
-    prompt: "Enter the Audio project name",
+    prompt: 'Enter the Audio project name',
   });
-  if (!projectName) {return;}
+  if (!projectName) {
+    return;
+  }
 
   // username prompt
   const userName = await vscode.window.showInputBox({
-    prompt: "Enter your username",
+    prompt: 'Enter your username',
   });
-  if (!userName) {return;}
+  if (!userName) {
+    return;
+  }
 
   // auto abbrevation
   const suggestedAbbr = projectName
     .split(/\s+/)
-    .reduce((initial, word) => initial + word[0], "");
+    .reduce((initial, word) => initial + word[0], '');
 
   let abbreviation = await vscode.window.showInputBox({
     prompt:
-      "Enter the project abbreviation. Leave as blank will take the suggession.",
+      'Enter the project abbreviation. Leave as blank will take the suggession.',
     placeHolder: `Suggession is : ${suggestedAbbr}`,
   });
 
@@ -53,44 +55,51 @@ export async function promptAndCollectProjectDetails(): Promise<
   const languages = LanguageCodes;
   const sourceLanguagePicker = await vscode.window.showQuickPick(
     languages.map(
-      (lang: LanguageMetadataType) => `${lang.refName} (${lang.tag})`
+      (lang: LanguageMetadataType) => `${lang.refName} (${lang.tag})`,
     ),
     {
-      placeHolder: "Select the source language",
-    }
+      placeHolder: 'Select the source language',
+    },
   );
-  if (!sourceLanguagePicker) {return;}
+  if (!sourceLanguagePicker) {
+    return;
+  }
 
   const sourceLanguage = languages.find(
     (lang: LanguageMetadataType) =>
-      `${lang.refName} (${lang.tag})` === sourceLanguagePicker
+      `${lang.refName} (${lang.tag})` === sourceLanguagePicker,
   );
-  if (!sourceLanguage) {return;}
+  if (!sourceLanguage) {
+    return;
+  }
 
   // Target language quick picker ui (vs native)
   const targetLanguagePicker = await vscode.window.showQuickPick(
     languages.map(
-      (lang: LanguageMetadataType) => `${lang.refName} (${lang.tag})`
+      (lang: LanguageMetadataType) => `${lang.refName} (${lang.tag})`,
     ),
     {
-      placeHolder: "Select the source language",
-    }
+      placeHolder: 'Select the source language',
+    },
   );
-  if (!targetLanguagePicker) {return;}
+  if (!targetLanguagePicker) {
+    return;
+  }
 
   const targetLanguage = languages.find(
     (lang: LanguageMetadataType) =>
-      `${lang.refName} (${lang.tag})` === targetLanguagePicker
+      `${lang.refName} (${lang.tag})` === targetLanguagePicker,
   );
-  if (!targetLanguage) {return;}
+  if (!targetLanguage) {
+    return;
+  }
 
-  // Select the scope 
+  // Select the scope
   const currentScope = await vscode.window.showQuickPick(
     ['Full Bible', 'Old Testament', 'New Testament'],
     { placeHolder: 'Select the scope of the project' },
   );
-  console.log("currentScope",currentScope);
-  
+
   if (!currentScope) {
     return;
   }
@@ -99,18 +108,21 @@ export async function promptAndCollectProjectDetails(): Promise<
   const versificationPicker = await vscode.window.showQuickPick(
     schemes.map(({ name }) => name.toUpperCase()),
     {
-      placeHolder: "Select one versification Scheme",
-    }
+      placeHolder: 'Select one versification Scheme',
+    },
   );
-  console.log("versificationPicker",versificationPicker);
-  
-  if (!versificationPicker) {return;}
+
+  if (!versificationPicker) {
+    return;
+  }
 
   // Select the versification
   const versification = schemes.find(
-    ({ name }) => name === versificationPicker.toLowerCase()
+    ({ name }) => name === versificationPicker.toLowerCase(),
   );
-  if (!versification) {return;}
+  if (!versification) {
+    return;
+  }
 
   return {
     projectName,
@@ -120,7 +132,7 @@ export async function promptAndCollectProjectDetails(): Promise<
     sourceLanguage,
     targetLanguage,
     versification,
-    currentScope
+    currentScope,
   };
 }
 
@@ -128,29 +140,29 @@ export async function promptAndCollectProjectDetails(): Promise<
  *
  * Function to generate scope
  */
-async function generateProjectScope(currentScope:string): Promise<{ [key: string]: any[] }> {
+async function generateProjectScope(
+  currentScope: string,
+): Promise<{ [key: string]: any[] }> {
   // TODO : Currently allow all books in scope
-  console.log(currentScope);
-  console.log(Bible);
-  let selectedScope: {[key: string]: any} = {};
-  switch(currentScope){
-    case "Old Testament": {
-      Bible.OT.forEach((book)=>{
+  let selectedScope: { [key: string]: any } = {};
+  switch (currentScope) {
+    case 'Old Testament': {
+      Bible.OT.forEach((book) => {
         selectedScope[book] = [];
       });
       break;
     }
-    case "New Testament": {
-      Bible.NT.forEach((book)=>{
+    case 'New Testament': {
+      Bible.NT.forEach((book) => {
         selectedScope[book] = [];
       });
       break;
     }
-    case "Full Bible": {
-      Bible.OT.forEach((book)=>{
+    case 'Full Bible': {
+      Bible.OT.forEach((book) => {
         selectedScope[book] = [];
       });
-      Bible.NT.forEach((book)=>{
+      Bible.NT.forEach((book) => {
         selectedScope[book] = [];
       });
       break;
@@ -173,7 +185,7 @@ async function generateScribeId(username: string, projectName: string) {
  * metadata should be compatable with V1 to ensure V1 project support here also
  */
 export async function createNewAudioProject(
-  proejctInputs: AudioProjectCreationDetails
+  proejctInputs: AudioProjectCreationDetails,
 ): Promise<Object | undefined> {
   const {
     projectName,
@@ -192,41 +204,39 @@ export async function createNewAudioProject(
   // TODO : Add provision later to select scopes
   const selectedScope = await generateProjectScope(currentScope);
 
-  console.log("in create audio project ==========>", scribeId, selectedScope);
-
   const newProjectMeta: object = {
-    format: "scripture burrito",
+    format: 'scripture burrito',
     projectName: projectName,
     meta: {
-      version: "1.0.0",
-      category: "source",
+      version: '1.0.0',
+      category: 'source',
       generator: {
-        softwareName: "Scribe Audio Extension",
+        softwareName: 'Scribe Audio Extension',
         softwareVersion: packageInfo.version,
         userName: userName,
       },
-      defaultLocale: "en",
+      defaultLocale: 'en',
       dateCreated: new Date().toDateString(),
       // normalization: "NFC",
-      comments: [""],
+      comments: [''],
     },
     idAuthorities: {
       scribe: {
-        id: "http://www.scribe.bible",
-        name: { en: "Scribe Audio Extension" },
+        id: 'http://www.scribe.bible',
+        name: { en: 'Scribe Audio Extension' },
       },
     },
     identification: {
       primary: {
         scribe: {
           [scribeId]: {
-            revision: "1",
+            revision: '1',
             timestamp: moment().format(),
           },
         },
       },
       name: { en: projectName },
-      description: { en: "" },
+      description: { en: '' },
       abbreviation: { en: abbreviation },
     },
     languages: [
@@ -234,28 +244,28 @@ export async function createNewAudioProject(
         tag: targetLanguage.tag,
         name: targetLanguage.refName,
         // TODO : need to add script direction in languagecode.ts
-        scriptDirection: "ltr",
-        type: "target",
+        scriptDirection: 'ltr',
+        type: 'target',
       },
       {
         tag: sourceLanguage.tag,
         name: sourceLanguage.refName,
         // TODO : need to add script direction in languagecode.ts
-        scriptDirection: "ltr",
-        type: "source",
+        scriptDirection: 'ltr',
+        type: 'source',
       },
     ],
     type: {
       flavorType: {
-        name: "scripture",
+        name: 'scripture',
         flavor: {
-          name: "audioTranslation",
-          performance: ["singleVoice", "drama"],
+          name: 'audioTranslation',
+          performance: ['singleVoice', 'drama'],
           // TODO : Need to update the type based on production audio
           formats: {
             format1: {
-              compression: "wav",
-              trackConfiguration: "1/0 (Mono)",
+              compression: 'wav',
+              trackConfiguration: '1/0 (Mono)',
               bitRate: 64000,
               bitDepth: 16,
               samplingRate: 22050,
@@ -282,7 +292,7 @@ export async function createNewAudioProject(
     : undefined;
 
   if (!workspaceFolder) {
-    vscode.window.showErrorMessage("No workspace folder found.");
+    vscode.window.showErrorMessage('No workspace folder found.');
     return;
   }
 
@@ -291,42 +301,38 @@ export async function createNewAudioProject(
     vscode?.workspace?.workspaceFolders[0];
 
   if (!WORKSPACE_FOLDER) {
-    vscode.window.showErrorMessage("No workspace folder found.");
+    vscode.window.showErrorMessage('No workspace folder found.');
     return;
   }
 
   const projectMetadataPath = vscode.Uri.joinPath(
     WORKSPACE_FOLDER.uri,
-    "metadata.json"
+    'metadata.json',
   );
   const audioContentDirPath = vscode.Uri.joinPath(
     WORKSPACE_FOLDER.uri,
-    "audio",
-    "ingredients"
+    'audio',
+    'ingredients',
   );
   const projectFileData = Buffer.from(
     JSON.stringify(newProjectMeta, null, 4),
-    "utf8"
+    'utf8',
   );
 
   // do not create if no versification
-  if (!versification?.file) {return;}
-
-  console.log(
-    "lib path : --------> ",
-    vscode.Uri.file(`../lib/versifications/${versification.file}`),
-    vscode.extensions.getExtension("scribe.scribe-audio")?.extensionPath
-  );
+  if (!versification?.file) {
+    return;
+  }
 
   const extensionPath = vscode.extensions.getExtension(
-    `${packageInfo.publisher}.${packageInfo.name}`
+    `${packageInfo.publisher}.${packageInfo.name}`,
   )?.extensionPath as string;
   const versificationPath = path.join(
     extensionPath,
-    "src",
-    "lib",
-    "versifications",
-    versification.file
+    'src',
+    'lib',
+    'versifications',
+    versification.file,
   );
 
   // write files - metadata , folders , versification
@@ -337,16 +343,15 @@ export async function createNewAudioProject(
       vscode.workspace.fs
         .copy(
           vscode.Uri.file(versificationPath),
-          vscode.Uri.joinPath(audioContentDirPath, "versification.json")
+          vscode.Uri.joinPath(audioContentDirPath, 'versification.json'),
         )
         .then(() => {
           vscode.window.showInformationMessage(
-            `Project created at ${WORKSPACE_FOLDER.uri}`
+            `Project created at ${WORKSPACE_FOLDER.uri}`,
           );
         });
-    })
+    }),
   );
 
   return newProjectMeta;
 }
-

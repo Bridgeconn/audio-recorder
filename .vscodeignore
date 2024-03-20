@@ -4,6 +4,7 @@ out/**
 node_modules/**
 src/**
 !src/webview-dist
+!src/lib
 R&D/**
 doc/**
 .gitignore

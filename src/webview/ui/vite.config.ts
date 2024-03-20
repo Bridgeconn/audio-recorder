@@ -1,5 +1,5 @@
-import { defineConfig } from "vite";
-import react from "@vitejs/plugin-react";
+import { defineConfig } from 'vite';
+import react from '@vitejs/plugin-react';
 
 // Use an environment variable to specify the app to build
 const appToBuild = process.env.APP_NAME;
@@ -17,6 +17,8 @@ export default defineConfig({
         assetFileNames: `[name].[ext]`,
       },
     },
-    outDir: appToBuild ? `../../webview-dist/${appToBuild}` : "../../webview-dist/",
+    outDir: appToBuild
+      ? `../../webview-dist/${appToBuild}`
+      : '../../webview-dist/',
   },
 });
