@@ -82,10 +82,11 @@ export function activate(context: vscode.ExtensionContext) {
           ? vscode.workspace.workspaceFolders[0]
           : undefined;
         if (!workspaceFolder) {
-          vscode.window.showErrorMessage(
-            'No workspace folder found. Please open a folder.',
-            { modal: true },
-          );
+          // vscode.window.showErrorMessage(
+          //   'No workspace folder found. Please open a folder.',
+          //   { modal: true },
+          // );
+          vscode.commands.executeCommand('vscode.openFolder');
           return;
         }
 
