@@ -75,6 +75,16 @@ export class NavigationWebViewProvider implements vscode.WebviewViewProvider {
             break;
           }
 
+          case NavWebToExtMsgTypes.createProject: {
+            vscode.commands.executeCommand('scribe-audio.initNewAudioProject');
+            break;
+          }
+
+          case NavWebToExtMsgTypes.openProject: {
+            vscode.commands.executeCommand('vscode.openFolder');
+            break;
+          }
+
           default:
             break;
         }
@@ -107,10 +117,12 @@ export class NavigationWebViewProvider implements vscode.WebviewViewProvider {
    */
   private async _getMetaData() {
     this._metadata = await getProjectMeta(this._context);
-    this.updateGlobalState(
-      storageKeys.metadataJSON,
-      JSON.stringify(this._metadata),
-    );
+    if (this._metadata) {
+      this.updateGlobalState(
+        storageKeys.metadataJSON,
+        JSON.stringify(this._metadata),
+      );
+    }
   }
 
   /**

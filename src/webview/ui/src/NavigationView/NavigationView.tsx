@@ -5,27 +5,21 @@ import {
   ExttoNavWebMsgTypes,
 } from '../../../../types/navigationView';
 import { IVersification } from '../../../../types/versification';
-
-const vscode = acquireVsCodeApi();
+import InitiateProject from '../components/initiateProject';
+import { vscode } from '../provider/vscodewebprovider';
 
 function App() {
   const [versificationData, setVersificationData] =
     useState<IVersification | null>(null);
 
-  // function handle post message
-  const postMessage = (type: string, data: unknown) => {
-    if (type) {
-      vscode.postMessage({
-        type: type,
-        data: data,
-      });
-    }
-  };
-
   useEffect(() => {
     // listen for vscode.postmessage event from extension to webview here
     if (!versificationData) {
-      postMessage(NavWebToExtMsgTypes.FetchVersification, '');
+      // postMessage(NavWebToExtMsgTypes.FetchVersification, '');
+      vscode.postMessage({
+        type: NavWebToExtMsgTypes.FetchVersification,
+        data: null,
+      });
     }
 
     const handleExtensionPostMessages = (event: MessageEvent) => {
@@ -52,13 +46,17 @@ function App() {
   }, []);
 
   const handleChapterSelect = (bookId: string, chapter: number) => {
-    postMessage(NavWebToExtMsgTypes.BCSelection, { bookId, chapter });
+    // postMessage(NavWebToExtMsgTypes.BCSelection, { bookId, chapter });
+    vscode.postMessage({
+      type: NavWebToExtMsgTypes.BCSelection,
+      data: { bookId, chapter },
+    });
   };
 
   return (
     <div className="">
       <div>
-        {versificationData &&
+        {versificationData ? (
           Object.entries(versificationData.maxVerses).map(
             ([bookId, chapters]) => (
               <details className="pt-3">
@@ -76,7 +74,10 @@ function App() {
                 </div>
               </details>
             ),
-          )}
+          )
+        ) : (
+          <InitiateProject />
+        )}
       </div>
     </div>
   );

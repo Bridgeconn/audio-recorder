@@ -4,7 +4,18 @@ import { IVersification } from './versification';
 export enum NavWebToExtMsgTypes {
   FetchVersification = 'Fetch Versification Data',
   BCSelection = 'Book Chapter Seelction',
+  createProject = 'Start Project Creation click',
+  openProject = 'open popup to select project folder',
 }
+export type bookIdChapterType = {
+  bookId: string;
+  chapter: number;
+};
+
+export type NavUItoExtMsg = {
+  type: NavWebToExtMsgTypes;
+  data: bookIdChapterType | null;
+};
 
 // ---------------- Ext to WebVie ------------------
 

@@ -1,4 +1,5 @@
 import * as vscode from 'vscode';
+import { NavWebToExtMsgTypes, bookIdChapterType } from './navigationView';
 
 export interface IAudioData {
   default: string;
@@ -44,6 +45,6 @@ export type RecordTriggerData = {
 };
 
 export type EditorUItoExtMsg = {
-  type: EditorToExtMSgType;
-  data: IChapterdata | RecordTriggerData;
+  type: EditorToExtMSgType | NavWebToExtMsgTypes;
+  data: IChapterdata | RecordTriggerData | null;
 };
