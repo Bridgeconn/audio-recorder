@@ -29,7 +29,7 @@ jobs:
       - name: Upload VSIX
         uses: actions/upload-artifact@v2
         with:
-          name: vscode-extension
+          name: audio-recorder
           path: '*.vsix'
 
   release:
@@ -42,7 +42,7 @@ jobs:
       - name: Download VSIX
         uses: actions/download-artifact@v2
         with:
-          name: vscode-extension
+          name: audio-recorder
           path: build
 
       - name: Create Release
@@ -63,6 +63,6 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.SECRET_TOKEN }}
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ./build/*.vsix
-          asset_name: vscode-extension-${{ github.run_number }}.vsix
+          asset_path: './*.vsix'
+          asset_name: audio-recorder-${{ github.run_number }}.vsix
           asset_content_type: application/zip
