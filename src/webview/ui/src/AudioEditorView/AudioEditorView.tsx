@@ -9,6 +9,7 @@ function App() {
     null,
   );
   const [selectedVerse, setSelectedVerse] = useState<number | null>(null);
+  const [scriptDirection, setScriptDirection] = useState<'ltr' | 'rtl'>();
 
   useEffect(() => {
     const handleExtensionPostMessages = (event: MessageEvent) => {
@@ -16,7 +17,8 @@ function App() {
       switch (type) {
         case ExttoEditorWebMsgTypes.ChapterData: {
           // processed vesification data from workspace dir
-          setChapterContent(data[0]);
+          setChapterContent(data.ChapterData[0]);
+          setScriptDirection(data.scriptDirection);
           break;
         }
 
@@ -43,6 +45,7 @@ function App() {
           verseData={verseData}
           selectedVerse={selectedVerse}
           setSelectedVerse={setSelectedVerse}
+          scriptDirection={scriptDirection}
         />
       ))}
     </main>
