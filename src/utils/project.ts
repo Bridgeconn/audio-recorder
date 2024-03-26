@@ -10,6 +10,7 @@ import { schemes } from './versification';
 import { Bible } from '../types/versification';
 
 import * as path from 'path';
+import { storageKeys } from '../types/storage';
 
 /**
  * Function use vscode native input collection and get project details
@@ -186,6 +187,7 @@ async function generateScribeId(username: string, projectName: string) {
  */
 export async function createNewAudioProject(
   proejctInputs: AudioProjectCreationDetails,
+  context: vscode.ExtensionContext,
 ): Promise<Object | undefined> {
   const {
     projectName,
@@ -307,10 +309,12 @@ export async function createNewAudioProject(
 
   const projectMetadataPath = vscode.Uri.joinPath(
     WORKSPACE_FOLDER.uri,
+    projectName,
     'metadata.json',
   );
   const audioContentDirPath = vscode.Uri.joinPath(
     WORKSPACE_FOLDER.uri,
+    projectName,
     'audio',
     'ingredients',
   );
@@ -345,9 +349,21 @@ export async function createNewAudioProject(
           vscode.Uri.file(versificationPath),
           vscode.Uri.joinPath(audioContentDirPath, 'versification.json'),
         )
-        .then(() => {
+        .then(async () => {
           vscode.window.showInformationMessage(
             `Project created at ${WORKSPACE_FOLDER.uri}`,
+          );
+          // Storing theworkspace path globally
+          context.workspaceState.update(
+            storageKeys.workspaceDirectory,
+            vscode.Uri.joinPath(WORKSPACE_FOLDER.uri, projectName),
+          );
+
+          // reload vscode workspace with new project path
+          await vscode.commands.executeCommand(
+            'vscode.openFolder',
+            vscode.Uri.joinPath(WORKSPACE_FOLDER.uri, projectName),
+            false,
           );
         });
     }),

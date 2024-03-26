@@ -101,6 +101,7 @@ export function activate(context: vscode.ExtensionContext) {
           if (projectDetails) {
             const projectFilePath = await vscode.Uri.joinPath(
               workspaceFolder.uri,
+              projectDetails.projectName,
               'metadata.json',
             );
 
@@ -136,20 +137,14 @@ export function activate(context: vscode.ExtensionContext) {
 
             // all checks passed - create new project
             // TODO: type of METAData
-            const newProjectMeta: any =
-              await createNewAudioProject(projectDetails);
+            const newProjectMeta: any = await createNewAudioProject(
+              projectDetails,
+              context,
+            );
 
             vscode.window.showInformationMessage(
               `New project initialized: ${newProjectMeta?.meta.generator.userName}'s ${newProjectMeta?.identification.name.en}`,
             );
-
-            // Storing theworkspace path globally
-            context.workspaceState.update(
-              storageKeys.workspaceDirectory,
-              workspaceFolder.uri,
-            );
-
-            // reload vscode workspace if needed
           }
         } catch (err) {
           vscode.window.showErrorMessage(
