@@ -1,0 +1,69 @@
+name: Release Audio Recorder
+
+on:
+  push:
+    branches:
+      - [master, ft/ci-cd]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v2
+        with:
+          node-version: '18.17.0'
+
+      - name: Install extension dependencies
+        run: yarn install
+
+      - name: Build UI
+        run: cd src/webview/ui && yarn install && yarn run build:all && cd ../../..
+
+      - name: Package extension
+        run: npm install -g @vscode/vsce && vsce package
+
+      - name: Upload VSIX
+        uses: actions/upload-artifact@v2
+        with:
+          name: vscode-extension
+          path: '*.vsix'
+
+  release:
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v2
+
+      - name: Download VSIX
+        uses: actions/download-artifact@v2
+        with:
+          name: vscode-extension
+          path: build
+
+      - name: Create Release
+        id: create_release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.SECRET_TOKEN }}
+        with:
+          tag_name: v${{ github.run_number }}
+          release_name: Release ${{ github.run_number }}
+          draft: false
+          prerelease: false
+
+      - name: Upload Release Asset
+        id: upload-release-asset
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.SECRET_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: ./build/*.vsix
+          asset_name: vscode-extension-${{ github.run_number }}.vsix
+          asset_content_type: application/zip
