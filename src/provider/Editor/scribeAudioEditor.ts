@@ -315,7 +315,11 @@ export class ScribeAudioEditor {
         if (this.panel?.webview) {
           this.postMessage(this.panel?.webview, {
             type: ExttoEditorWebMsgTypes.ChapterData,
-            data: this.currentChapterVerses,
+            data: {
+              ChapterData: this.currentChapterVerses,
+              scriptDirection:
+                this.metadataJson?.languages?.[0]?.scriptDirection,
+            },
           });
         }
       }, 500);
