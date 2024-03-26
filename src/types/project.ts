@@ -10,7 +10,6 @@ export interface AudioProjectCreationDetails {
   abbreviation: string;
   userName: string;
   projectFlavour: string;
-  sourceLanguage: LanguageMetadataType;
   targetLanguage: LanguageMetadataType;
   versification: versification | undefined;
   currentScope: string;

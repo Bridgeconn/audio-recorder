@@ -52,35 +52,14 @@ export async function promptAndCollectProjectDetails(): Promise<
     abbreviation = suggestedAbbr;
   }
 
-  // source language quick picker ui (vs native)
-  const languages = LanguageCodes;
-  const sourceLanguagePicker = await vscode.window.showQuickPick(
-    languages.map(
-      (lang: LanguageMetadataType) => `${lang.refName} (${lang.tag})`,
-    ),
-    {
-      placeHolder: 'Select the source language',
-    },
-  );
-  if (!sourceLanguagePicker) {
-    return;
-  }
-
-  const sourceLanguage = languages.find(
-    (lang: LanguageMetadataType) =>
-      `${lang.refName} (${lang.tag})` === sourceLanguagePicker,
-  );
-  if (!sourceLanguage) {
-    return;
-  }
-
   // Target language quick picker ui (vs native)
+  const languages = LanguageCodes;
   const targetLanguagePicker = await vscode.window.showQuickPick(
     languages.map(
       (lang: LanguageMetadataType) => `${lang.refName} (${lang.tag})`,
     ),
     {
-      placeHolder: 'Select the source language',
+      placeHolder: 'Select the target language',
     },
   );
   if (!targetLanguagePicker) {
@@ -130,7 +109,6 @@ export async function promptAndCollectProjectDetails(): Promise<
     projectFlavour,
     userName,
     abbreviation,
-    sourceLanguage,
     targetLanguage,
     versification,
     currentScope,
@@ -193,7 +171,6 @@ export async function createNewAudioProject(
     projectName,
     userName,
     abbreviation,
-    sourceLanguage,
     targetLanguage,
     versification,
     currentScope,
@@ -208,7 +185,6 @@ export async function createNewAudioProject(
 
   const newProjectMeta: object = {
     format: 'scripture burrito',
-    projectName: projectName,
     meta: {
       version: '1.0.0',
       category: 'source',
@@ -219,7 +195,6 @@ export async function createNewAudioProject(
       },
       defaultLocale: 'en',
       dateCreated: new Date().toDateString(),
-      // normalization: "NFC",
       comments: [''],
     },
     idAuthorities: {
@@ -245,16 +220,7 @@ export async function createNewAudioProject(
       {
         tag: targetLanguage.tag,
         name: targetLanguage.refName,
-        // TODO : need to add script direction in languagecode.ts
-        scriptDirection: 'ltr',
-        type: 'target',
-      },
-      {
-        tag: sourceLanguage.tag,
-        name: sourceLanguage.refName,
-        // TODO : need to add script direction in languagecode.ts
-        scriptDirection: 'ltr',
-        type: 'source',
+        scriptDirection: targetLanguage.direction,
       },
     ],
     type: {
@@ -262,15 +228,14 @@ export async function createNewAudioProject(
         name: 'scripture',
         flavor: {
           name: 'audioTranslation',
-          performance: ['singleVoice', 'drama'],
-          // TODO : Need to update the type based on production audio
+          performance: ['singleVoice', 'reading'],
           formats: {
             format1: {
               compression: 'wav',
               trackConfiguration: '1/0 (Mono)',
-              bitRate: 64000,
-              bitDepth: 16,
-              samplingRate: 22050,
+              bitRate: 1152,
+              bitDepth: 24,
+              samplingRate: 48000,
             },
           },
         },
