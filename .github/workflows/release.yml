@@ -1,0 +1,74 @@
+name: Scribe Audio Recorder
+
+on:
+  push:
+    branches: [master]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v2
+        with:
+          node-version: '18.17.0'
+
+      - name: Install extension dependencies
+        run: yarn install
+
+      - name: Build UI
+        run: cd src/webview/ui && yarn install && yarn run build:all && cd ../../..
+
+      - name: Package extension
+        run: npm install -g @vscode/vsce && vsce package
+
+      - name: Upload VSIX
+        uses: actions/upload-artifact@v2
+        with:
+          name: audio-recorder
+          path: './*.vsix'
+
+  release:
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v2
+
+      - name: Download VSIX
+        uses: actions/download-artifact@v2
+        with:
+          name: audio-recorder
+          path: ./audio-recorder
+
+      - name: Install jq
+        run: sudo apt-get update && sudo apt-get install jq -y
+
+      - name: Read Version from package.json
+        run: echo "PACKAGE_VERSION=$(jq -r '.version' package.json)" >> $GITHUB_ENV
+
+      - name: Create Release
+        id: create_release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.SECRET_TOKEN }}
+        with:
+          tag_name: v${{ env.PACKAGE_VERSION }}
+          release_name: Scribe-audio-recorder ${{ env.PACKAGE_VERSION }}
+          draft: false
+          prerelease: false
+
+      - name: Upload Release Asset
+        id: upload-release-asset
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.SECRET_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: ./audio-recorder/scribe-audio-${{ env.PACKAGE_VERSION }}.vsix
+          asset_name: scribe-audio-recorder-${{ env.PACKAGE_VERSION }}.vsix
+          asset_content_type: application/zip
