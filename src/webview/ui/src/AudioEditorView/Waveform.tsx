@@ -1,5 +1,7 @@
-import { useCallback, useEffect, useRef } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import WaveSurfer from 'wavesurfer.js';
+import { IAudioMeta } from '../../../../types/editor';
+import { formatAudioDuration } from '../utils/formatTime';
 
 interface IWaveformProps {
   url: string;
@@ -9,6 +11,8 @@ interface IWaveformProps {
 function Waveform({ url, control }: IWaveformProps) {
   const containerRef = useRef<HTMLDivElement | null>(null);
   const wavesurfer = useRef<WaveSurfer | null>(null);
+  const [audioMeta, setAudioMeta] = useState<IAudioMeta | null>(null); // can be used future functionalities
+  const [audioPlayBack, setAudioPlayBack] = useState(0);
 
   /**
    * fetch audio data and load wave
@@ -34,6 +38,26 @@ function Waveform({ url, control }: IWaveformProps) {
         // wavesurfer.current?.load("https://www.mfiles.co.uk/mp3-downloads/brahms-st-anthony-chorale-theme-two-pianos.mp3");
         //vscode :  https://file%2B.vscode-resource.vscode-cdn.net/home/siju/Music/Empty%20-%20new%20audio/audio/ingredients/GEN/1/1_1_1_default.mp3
         wavesurfer.current?.load(url);
+
+        wavesurfer.current.on('ready', () => {
+          const audioBuffer = wavesurfer?.current?.getDecodedData();
+          if (audioBuffer) {
+            setAudioMeta({
+              duration: audioBuffer.duration,
+              length: audioBuffer.length,
+              numberOfChannels: audioBuffer.numberOfChannels,
+            });
+            setAudioPlayBack(audioBuffer.duration);
+          }
+        });
+
+        wavesurfer.current.on('audioprocess', (time) => {
+          setAudioPlayBack(time);
+        });
+
+        wavesurfer.current.on('seeking', (time) => {
+          setAudioPlayBack(time);
+        });
       });
   }
 
@@ -75,13 +99,19 @@ function Waveform({ url, control }: IWaveformProps) {
   }, [control]);
 
   return (
-    <>
+    <div className="flex items-center justify-between w-full gap-3">
       <div
-        className="w-full relative h-6"
+        className="flex-1 relative h-6"
         ref={containerRef}
         id="wav-container"
       />
-    </>
+      {/* Duration */}
+      {/* <div className="">
+        {audioMeta?.duration &&
+          (formatAudioDuration(audioMeta.duration) as string)}
+      </div> */}
+      <div className="">{formatAudioDuration(audioPlayBack) as string}</div>
+    </div>
   );
 }
 
