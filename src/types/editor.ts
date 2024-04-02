@@ -48,3 +48,9 @@ export type EditorUItoExtMsg = {
   type: EditorToExtMSgType | NavWebToExtMsgTypes;
   data: IChapterdata | RecordTriggerData | null;
 };
+
+export interface IAudioMeta {
+  duration: number;
+  length: number;
+  numberOfChannels: number;
+}
