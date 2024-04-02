@@ -2,7 +2,7 @@ name: Scribe Audio Recorder
 
 on:
   push:
-    branches: [master]
+    branches: [master,ft/publish]
 
 jobs:
   build:
@@ -72,3 +72,14 @@ jobs:
           asset_path: ./audio-recorder/scribe-audio-${{ env.PACKAGE_VERSION }}.vsix
           asset_name: scribe-audio-recorder-${{ env.PACKAGE_VERSION }}.vsix
           asset_content_type: application/zip
+
+  publish:
+    needs: release
+    runs-on: ubuntu-latest
+    steps:
+      - name: install vsce
+        run: yarn add @vscode/vsce --dev
+      - name: Publish on VS market place
+        run: npm run deploy
+        env:
+          VSCE_PAT: ${{ secrets.VSCE_PAT }}
