@@ -2,7 +2,7 @@ name: Scribe Audio Recorder
 
 on:
   push:
-    branches: [master,ft/publish]
+    branches: [master]
 
 jobs:
   build:
