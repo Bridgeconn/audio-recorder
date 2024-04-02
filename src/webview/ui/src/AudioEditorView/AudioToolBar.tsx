@@ -8,6 +8,7 @@ import Waveform from './Waveform';
 import Recorder from './Recorder';
 import { vscode } from '../provider/vscodewebprovider';
 import { EditorToExtMSgType } from '../../../../types/editor';
+
 interface IAudioToolBarProps {
   audioData: IAudioData | undefined;
   selectedVerse: number;
@@ -15,12 +16,14 @@ interface IAudioToolBarProps {
 
 function AudioToolBar({ audioData, selectedVerse }: IAudioToolBarProps) {
   const [control, setControl] = useState('');
+
   const handleDelete = () => {
     vscode.postMessage({
       type: EditorToExtMSgType.deleteAudio,
       data: { verse: selectedVerse },
     });
   };
+
   return (
     <div
       className="w-[99%] h-7 border border-gray-600 my-1 px-2 py-1 -bottom-10 right-0 self-center
