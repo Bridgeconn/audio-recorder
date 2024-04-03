@@ -8,6 +8,7 @@ import Waveform from './Waveform';
 import Recorder from './Recorder';
 import { vscode } from '../provider/vscodewebprovider';
 import { EditorToExtMSgType } from '../../../../types/editor';
+import TakeButton from '../components/buttons/takeBtn';
 
 interface IAudioToolBarProps {
   audioData: IAudioData | undefined;
@@ -22,6 +23,18 @@ function AudioToolBar({ audioData, selectedVerse }: IAudioToolBarProps) {
       type: EditorToExtMSgType.deleteAudio,
       data: { verse: selectedVerse },
     });
+  };
+
+  const handleTakeClick = (
+    e: React.MouseEvent<HTMLElement>,
+    take: string,
+    doubleClk = false,
+  ) => {
+    if (doubleClk) {
+      console.log('clicked double : ', take, e, doubleClk);
+    } else {
+      console.log('clicked single : ', take, e, doubleClk);
+    }
   };
 
   return (
@@ -73,6 +86,13 @@ function AudioToolBar({ audioData, selectedVerse }: IAudioToolBarProps) {
         >
           <Delete classes="w-5 h-5 stroke-red-500 hover:stroke-red-600" />
         </button>
+      </div>
+
+      {/* takes */}
+      <div className="flex gap-2 items-center">
+        <TakeButton text="A" placeholder="Take A" onClick={handleTakeClick} />
+        <TakeButton text="B" placeholder="Take B" onClick={handleTakeClick} />
+        <TakeButton text="C" placeholder="Take C" onClick={handleTakeClick} />
       </div>
     </div>
   );
