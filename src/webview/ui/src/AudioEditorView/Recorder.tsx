@@ -6,9 +6,10 @@ import { vscode } from '../provider/vscodewebprovider';
 
 interface IRecorderProps {
   selectedVerse: number;
+  take: string;
 }
 
-function Recorder({ selectedVerse }: IRecorderProps) {
+function Recorder({ selectedVerse, take }: IRecorderProps) {
   const [recStarted, setRecStarted] = useState<boolean>(false);
 
   const handleStartRecord = () => {
@@ -16,7 +17,7 @@ function Recorder({ selectedVerse }: IRecorderProps) {
     setRecStarted(true);
     vscode.postMessage({
       type: EditorToExtMSgType.startRecord,
-      data: { verse: selectedVerse },
+      data: { verse: selectedVerse, take: take },
     });
   };
 
@@ -25,7 +26,7 @@ function Recorder({ selectedVerse }: IRecorderProps) {
     setRecStarted(false);
     vscode.postMessage({
       type: EditorToExtMSgType.stopRecord,
-      data: { verse: selectedVerse },
+      data: { verse: selectedVerse, take: take },
     });
   };
 

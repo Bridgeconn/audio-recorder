@@ -17,22 +17,46 @@ interface IAudioToolBarProps {
 
 function AudioToolBar({ audioData, selectedVerse }: IAudioToolBarProps) {
   const [control, setControl] = useState('');
-
+  const [selectedTake, setSelectedTake] = useState('1');
+  console.log(audioData);
   const handleDelete = () => {
+    // To check whether current take is default or not & update the take
+    let currentTake = selectedTake;
+    if (audioData?.default?.includes(selectedTake)) {
+      currentTake = `${selectedTake}_default`;
+    }
     vscode.postMessage({
       type: EditorToExtMSgType.deleteAudio,
-      data: { verse: selectedVerse },
+      data: { verse: selectedVerse, take: currentTake },
     });
   };
 
   const handleTakeClick = (
     e: React.MouseEvent<HTMLElement>,
-    take: string,
+    take: '1' | '2' | '3',
     doubleClk = false,
   ) => {
     if (doubleClk) {
       console.log('clicked double : ', take, e, doubleClk);
+      if (audioData && audioData[`take${take}`]) {
+        console.log('Audio already available');
+        vscode.postMessage({
+          type: EditorToExtMSgType.defaultChange,
+          data: {
+            verse: selectedVerse,
+            take: take,
+            defaultAudio: audioData.default,
+          },
+        });
+      } else {
+        console.log('No audio for this take');
+      }
     } else {
+      if (!audioData) {
+        setSelectedTake(`${take}_default`);
+      } else {
+        setSelectedTake(take);
+      }
       console.log('clicked single : ', take, e, doubleClk);
     }
   };
@@ -51,7 +75,7 @@ function AudioToolBar({ audioData, selectedVerse }: IAudioToolBarProps) {
 
       {/* Buttons */}
       <div className="flex gap-2 items-center">
-        <Recorder selectedVerse={selectedVerse} />
+        <Recorder selectedVerse={selectedVerse} take={selectedTake} />
 
         {control === 'play' ? (
           <button
@@ -90,9 +114,33 @@ function AudioToolBar({ audioData, selectedVerse }: IAudioToolBarProps) {
 
       {/* takes */}
       <div className="flex gap-2 items-center">
-        <TakeButton text="A" placeholder="Take A" onClick={handleTakeClick} />
-        <TakeButton text="B" placeholder="Take B" onClick={handleTakeClick} />
-        <TakeButton text="C" placeholder="Take C" onClick={handleTakeClick} />
+        <TakeButton
+          text="A"
+          placeholder="Take A"
+          value="1"
+          selectedTake={selectedTake}
+          onClick={handleTakeClick}
+          defaulted={audioData?.default === 'take1'}
+          recorded={audioData?.take1 ? true : false}
+        />
+        <TakeButton
+          text="B"
+          placeholder="Take B"
+          value="2"
+          selectedTake={selectedTake}
+          onClick={handleTakeClick}
+          defaulted={audioData?.default === 'take2'}
+          recorded={audioData?.take2 ? true : false}
+        />
+        <TakeButton
+          text="C"
+          placeholder="Take C"
+          value="3"
+          selectedTake={selectedTake}
+          onClick={handleTakeClick}
+          defaulted={audioData?.default === 'take3'}
+          recorded={audioData?.take3 ? true : false}
+        />
       </div>
     </div>
   );
