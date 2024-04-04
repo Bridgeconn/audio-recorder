@@ -50,7 +50,7 @@ function AudioToolBar({ audioData, selectedVerse }: IAudioToolBarProps) {
             onClick={() => setControl('pause')}
             title="Pause"
           >
-            <Pause classes="w-5 h-5 fill-blue-500 hover:fill-blue-600" />
+            <Pause classes="w-6 h-6 fill-blue-500 hover:fill-blue-600" />
           </button>
         ) : (
           <button
