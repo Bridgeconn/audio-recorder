@@ -6,9 +6,10 @@ import { formatAudioDuration } from '../utils/formatTime';
 interface IWaveformProps {
   url: string;
   control: string;
+  setControl: React.Dispatch<React.SetStateAction<string>>;
 }
 
-function Waveform({ url, control }: IWaveformProps) {
+function Waveform({ url, control, setControl }: IWaveformProps) {
   const containerRef = useRef<HTMLDivElement | null>(null);
   const wavesurfer = useRef<WaveSurfer | null>(null);
   const [audioMeta, setAudioMeta] = useState<IAudioMeta | null>(null); // can be used future functionalities
@@ -66,8 +67,14 @@ function Waveform({ url, control }: IWaveformProps) {
     fetchAudioFile(url);
   }, [url]);
 
+  const onEndPlay = () => {
+    wavesurfer.current && wavesurfer.current.stop();
+    setControl('');
+  };
+
   const onPlay = useCallback(() => {
     wavesurfer.current && wavesurfer.current.play();
+    wavesurfer.current && wavesurfer.current.on('finish', onEndPlay);
   }, [wavesurfer]);
 
   const onPause = useCallback(() => {

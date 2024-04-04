@@ -32,7 +32,11 @@ function AudioToolBar({ audioData, selectedVerse }: IAudioToolBarProps) {
       {/* Waves */}
       <div className="flex-1">
         {audioData?.default && (
-          <Waveform url={audioData[audioData['default']]} control={control} />
+          <Waveform
+            url={audioData[audioData['default']]}
+            control={control}
+            setControl={setControl}
+          />
         )}
       </div>
 
