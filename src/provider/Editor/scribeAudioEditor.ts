@@ -77,7 +77,7 @@ export class ScribeAudioEditor {
       this.panel.webview.onDidReceiveMessage(async (e: EditorUItoExtMsg) => {
         switch (e.type) {
           case EditorToExtMSgType.startRecord: {
-            const { verse } = e.data as RecordTriggerData;
+            const { verse, take } = e.data as RecordTriggerData;
             const projectDir = await vscode.Uri.joinPath(
               this.projectDirectory,
               'audio',
@@ -87,7 +87,7 @@ export class ScribeAudioEditor {
             );
             const projectFileDir = await vscode.Uri.joinPath(
               projectDir,
-              `${this.currentBC.chapter}_${verse}_1_default.wav`,
+              `${this.currentBC.chapter}_${verse}_${take}.wav`,
             );
 
             // check if dir exist
@@ -112,56 +112,61 @@ export class ScribeAudioEditor {
           }
 
           case EditorToExtMSgType.stopRecord: {
-            const { verse } = e.data as RecordTriggerData;
+            const { verse, take } = e.data as RecordTriggerData;
             stopRecord(this.recordingProcess);
-            const audioFile = await vscode.Uri.joinPath(
-              this.projectDirectory,
-              'audio',
-              'ingredients',
-              this.currentBC.bookId,
-              this.currentBC.chapter.toString(),
-              `${this.currentBC.chapter}_${verse}_1_default.wav`,
-            );
-            // check if file recorded
-            const isFileExist = await vscode.workspace.fs.stat(audioFile).then(
-              (value) => value,
-              () => false,
-            );
-
-            if (isFileExist && typeof isFileExist !== 'boolean') {
-              const ingredient = await path.join(
+            // If the recorded audio is default then update the metadata
+            if (take.includes('default')) {
+              const audioFile = await vscode.Uri.joinPath(
+                this.projectDirectory,
                 'audio',
                 'ingredients',
                 this.currentBC.bookId,
                 this.currentBC.chapter.toString(),
-                `${this.currentBC.chapter}_${verse}_1_default.wav`,
+                `${this.currentBC.chapter}_${verse}_${take}.wav`,
               );
-              const file = await vscode.workspace.fs.readFile(audioFile);
-              const metadata = this.getGlobalState(storageKeys.metadataJSON);
-              let meta = JSON.parse(metadata);
-              meta.ingredients[ingredient] = {
-                checksum: { md5: md5(file) },
-                mimeType: 'audio/wav',
-                size: isFileExist?.size,
-                scope: {},
-              };
+              // check if file recorded
+              const isFileExist = await vscode.workspace.fs
+                .stat(audioFile)
+                .then(
+                  (value) => value,
+                  () => false,
+                );
 
-              meta.ingredients[ingredient].scope[this.currentBC.bookId] = [
-                `${this.currentBC.chapter}:${verse}`,
-              ];
-              const metaFile = await vscode.Uri.joinPath(
-                this.projectDirectory,
-                'metadata.json',
-              );
-              const projectFileData = Buffer.from(
-                JSON.stringify(meta, null, 4),
-                'utf8',
-              );
-              this.updateGlobalState(
-                storageKeys.metadataJSON,
-                JSON.stringify(meta),
-              );
-              vscode.workspace.fs.writeFile(metaFile, projectFileData);
+              if (isFileExist && typeof isFileExist !== 'boolean') {
+                const ingredient = await path.join(
+                  'audio',
+                  'ingredients',
+                  this.currentBC.bookId,
+                  this.currentBC.chapter.toString(),
+                  `${this.currentBC.chapter}_${verse}_${take}.wav`,
+                );
+                const file = await vscode.workspace.fs.readFile(audioFile);
+                const metadata = this.getGlobalState(storageKeys.metadataJSON);
+                let meta = JSON.parse(metadata);
+                meta.ingredients[ingredient] = {
+                  checksum: { md5: md5(file) },
+                  mimeType: 'audio/wav',
+                  size: isFileExist?.size,
+                  scope: {},
+                };
+
+                meta.ingredients[ingredient].scope[this.currentBC.bookId] = [
+                  `${this.currentBC.chapter}:${verse}`,
+                ];
+                const metaFile = await vscode.Uri.joinPath(
+                  this.projectDirectory,
+                  'metadata.json',
+                );
+                const projectFileData = Buffer.from(
+                  JSON.stringify(meta, null, 4),
+                  'utf8',
+                );
+                this.updateGlobalState(
+                  storageKeys.metadataJSON,
+                  JSON.stringify(meta),
+                );
+                vscode.workspace.fs.writeFile(metaFile, projectFileData);
+              }
             }
 
             // after panel init
@@ -170,15 +175,22 @@ export class ScribeAudioEditor {
           }
 
           case EditorToExtMSgType.deleteAudio: {
-            const { verse } = e.data as RecordTriggerData;
-            // deleteAudio(this.recordingProcess);
-            const audioFile = await vscode.Uri.joinPath(
+            const { verse, take } = e.data as RecordTriggerData;
+            const currentVerseData =
+              this.currentChapterVerses?.[0].contents.find(
+                (verseData) => verseData.verseNumber === verse,
+              );
+            const audioData = currentVerseData?.audio;
+            const audioFolder = await vscode.Uri.joinPath(
               this.projectDirectory,
               'audio',
               'ingredients',
               this.currentBC.bookId,
               this.currentBC.chapter.toString(),
-              `${this.currentBC.chapter}_${verse}_1_default.wav`,
+            );
+            const audioFile = await vscode.Uri.joinPath(
+              audioFolder,
+              `${this.currentBC.chapter}_${verse}_${take}.wav`,
             );
 
             // Deleting the audio file
@@ -196,12 +208,66 @@ export class ScribeAudioEditor {
                 'ingredients',
                 this.currentBC.bookId,
                 this.currentBC.chapter.toString(),
-                `${this.currentBC.chapter}_${verse}_1_default.wav`,
+                `${this.currentBC.chapter}_${verse}_${take}.wav`,
               );
               const metadata = this.getGlobalState(storageKeys.metadataJSON);
               let meta = JSON.parse(metadata);
-
               delete meta.ingredients[ingredient];
+
+              // If deleting a default audio then rotate the default if other audio available
+              if (take.includes('default') && audioData?.default) {
+                // @ts-ignore
+                delete audioData[audioData.default];
+                // @ts-ignore
+                delete audioData.default;
+                if (Object.keys(audioData).length > 0) {
+                  const newDefault = Object.keys(audioData)[0].replace(
+                    'take',
+                    '',
+                  );
+                  const currentFile = await vscode.Uri.joinPath(
+                    audioFolder,
+                    `${this.currentBC.chapter}_${verse}_${newDefault}.wav`,
+                  );
+                  const toDefault = await vscode.Uri.joinPath(
+                    audioFolder,
+                    `${this.currentBC.chapter}_${verse}_${newDefault}_default.wav`,
+                  );
+                  // Rename the audio to default
+                  await vscode.workspace.fs.rename(currentFile, toDefault);
+
+                  // Adding new default into metadata ingredients
+                  const newIngredient = await path.join(
+                    'audio',
+                    'ingredients',
+                    this.currentBC.bookId,
+                    this.currentBC.chapter.toString(),
+                    `${this.currentBC.chapter}_${verse}_${newDefault}_default.wav`,
+                  );
+
+                  // Checking for new default file exists or not for reading size
+                  const isFileExist = await vscode.workspace.fs
+                    .stat(toDefault)
+                    .then(
+                      (value) => value,
+                      () => false,
+                    );
+                  // Reading the new default file for storing the md5 to ingridents
+                  const file = await vscode.workspace.fs.readFile(toDefault);
+                  if (isFileExist && typeof isFileExist !== 'boolean') {
+                    // Updating the ingridients
+                    meta.ingredients[newIngredient] = {
+                      checksum: { md5: md5(file) },
+                      mimeType: 'audio/wav',
+                      size: isFileExist?.size,
+                      scope: {},
+                    };
+                    meta.ingredients[newIngredient].scope[
+                      this.currentBC.bookId
+                    ] = [`${this.currentBC.chapter}:${verse}`];
+                  }
+                }
+              }
 
               const metaFile = await vscode.Uri.joinPath(
                 this.projectDirectory,
@@ -219,6 +285,107 @@ export class ScribeAudioEditor {
             }
             // after panel init
             this.readData(this.currentBC.bookId, this.currentBC.chapter);
+            break;
+          }
+
+          case EditorToExtMSgType.defaultChange: {
+            const { verse, take, defaultAudio } = e.data as RecordTriggerData;
+            // Path of audio directory
+            const audioFolder = await vscode.Uri.joinPath(
+              this.projectDirectory,
+              'audio',
+              'ingredients',
+              this.currentBC.bookId,
+              this.currentBC.chapter.toString(),
+            );
+            // Selected file which needs to change to default
+            const currentFileName = await vscode.Uri.joinPath(
+              audioFolder,
+              `${this.currentBC.chapter}_${verse}_${take}.wav`,
+            );
+            const newDefault = await vscode.Uri.joinPath(
+              audioFolder,
+              `${this.currentBC.chapter}_${verse}_${take}_default.wav`,
+            );
+            // Rename the select audio to default
+            await vscode.workspace.fs.rename(currentFileName, newDefault);
+
+            // Existing default audio file and changing the default from it
+            const existingDefault = await vscode.Uri.joinPath(
+              audioFolder,
+              `${this.currentBC.chapter}_${verse}_${defaultAudio && defaultAudio[4]}_default.wav`,
+            );
+            const changeFromDefault = await vscode.Uri.joinPath(
+              audioFolder,
+              `${this.currentBC.chapter}_${verse}_${defaultAudio && defaultAudio[4]}.wav`,
+            );
+            // Rename the current default audio file name
+            await vscode.workspace.fs.rename(
+              existingDefault,
+              changeFromDefault,
+            );
+
+            // Removing old default from metadata
+            const oldIngredient = await path.join(
+              'audio',
+              'ingredients',
+              this.currentBC.bookId,
+              this.currentBC.chapter.toString(),
+              `${this.currentBC.chapter}_${verse}_${defaultAudio && defaultAudio[4]}_default.wav`,
+            );
+            // Reading metadata from Global state
+            const metadata = this.getGlobalState(storageKeys.metadataJSON);
+            let meta = JSON.parse(metadata);
+            // Deleteing the old default from metadata
+            delete meta.ingredients[oldIngredient];
+
+            // Adding new default into metadata ingredients
+            const newIngredient = await path.join(
+              'audio',
+              'ingredients',
+              this.currentBC.bookId,
+              this.currentBC.chapter.toString(),
+              `${this.currentBC.chapter}_${verse}_${take}_default.wav`,
+            );
+
+            // Checking for new default file exists or not for reading size
+            const isFileExist = await vscode.workspace.fs.stat(newDefault).then(
+              (value) => value,
+              () => false,
+            );
+            // Reading the new default file for storing the md5 to ingridents
+            const file = await vscode.workspace.fs.readFile(newDefault);
+            if (isFileExist && typeof isFileExist !== 'boolean') {
+              // Updating the ingridients
+              meta.ingredients[newIngredient] = {
+                checksum: { md5: md5(file) },
+                mimeType: 'audio/wav',
+                size: isFileExist?.size,
+                scope: {},
+              };
+              meta.ingredients[newIngredient].scope[this.currentBC.bookId] = [
+                `${this.currentBC.chapter}:${verse}`,
+              ];
+              const metaFile = await vscode.Uri.joinPath(
+                this.projectDirectory,
+                'metadata.json',
+              );
+              const projectFileData = Buffer.from(
+                JSON.stringify(meta, null, 4),
+                'utf8',
+              );
+              // Updating the new metadata to Global state
+              this.updateGlobalState(
+                storageKeys.metadataJSON,
+                JSON.stringify(meta),
+              );
+
+              // Updating the metadata file in the file system
+              vscode.workspace.fs.writeFile(metaFile, projectFileData);
+
+              // after panel init
+              this.readData(this.currentBC.bookId, this.currentBC.chapter);
+            }
             break;
           }
 
