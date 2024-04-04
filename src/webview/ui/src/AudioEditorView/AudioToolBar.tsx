@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { IAudioData } from '../../../../types/editor';
 import Delete from '../IconsComponents/Delete';
 import Pause from '../IconsComponents/Pause';
@@ -19,6 +19,14 @@ function AudioToolBar({ audioData, selectedVerse }: IAudioToolBarProps) {
   const [control, setControl] = useState('');
   const [selectedTake, setSelectedTake] = useState('1');
   console.log(audioData);
+
+  // use effect to find the default take number and set in selectedTake
+  useEffect(() => {
+    if (audioData && audioData.default) {
+      setSelectedTake(audioData.default[4]);
+    }
+  }, [audioData]);
+
   const handleDelete = () => {
     // To check whether current take is default or not & update the take
     let currentTake = selectedTake;
@@ -69,7 +77,7 @@ function AudioToolBar({ audioData, selectedVerse }: IAudioToolBarProps) {
       {/* Waves */}
       <div className="flex-1">
         {audioData?.default && (
-          <Waveform url={audioData[audioData['default']]} control={control} />
+          <Waveform url={audioData[`take${selectedTake}`]} control={control} />
         )}
       </div>
 

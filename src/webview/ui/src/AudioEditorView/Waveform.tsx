@@ -64,6 +64,10 @@ function Waveform({ url, control }: IWaveformProps) {
   // initial load audio
   useEffect(() => {
     fetchAudioFile(url);
+
+    return () => {
+      wavesurfer.current?.destroy();
+    };
   }, [url]);
 
   const onPlay = useCallback(() => {
