@@ -54,7 +54,7 @@ function AudioToolBar({ audioData, selectedVerse }: IAudioToolBarProps) {
             onClick={() => setControl('play')}
             title="Play"
           >
-            <Play classes="w-5 h-5  stroke-green-500 hover:stroke-green-700" />
+            <Play classes="w-6 h-6  stroke-green-400 hover:stroke-green-600" />
           </button>
         )}
 
@@ -63,7 +63,7 @@ function AudioToolBar({ audioData, selectedVerse }: IAudioToolBarProps) {
           onClick={() => setControl('rewind')}
           title="Rewind"
         >
-          <Rewind classes="w-5 h-5 stroke-red-500 hover:stroke-red-600" />
+          <Rewind classes="w-5 h-5 stroke-green-400 hover:stroke-green-600" />
         </button>
 
         <button
@@ -71,7 +71,7 @@ function AudioToolBar({ audioData, selectedVerse }: IAudioToolBarProps) {
           onClick={() => handleDelete()}
           title="Delete"
         >
-          <Delete classes="w-5 h-5 stroke-red-500 hover:stroke-red-600" />
+          <Delete classes="w-6 h-6 stroke-blue-500 hover:stroke-red-600" />
         </button>
       </div>
     </div>
