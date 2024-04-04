@@ -39,7 +39,7 @@ function Recorder({ selectedVerse }: IRecorderProps) {
           onClick={() => handleStopRecord()}
           title="Stop"
         >
-          <Stop classes="w-7 h-7 stroke-red-500 hover:stroke-gray-700" />
+          <Stop classes="w-6 h-6 stroke-red-500 hover:stroke-gray-700" />
         </button>
       ) : (
         <button
@@ -50,7 +50,7 @@ function Recorder({ selectedVerse }: IRecorderProps) {
           <Record
             classes={`${
               recStarted && 'animate-ping'
-            } w-5 h-5 fill-red-500 hover:fill-red-700`}
+            } w-4 h-4 fill-red-500 hover:fill-red-700`}
           />
         </button>
       )}
