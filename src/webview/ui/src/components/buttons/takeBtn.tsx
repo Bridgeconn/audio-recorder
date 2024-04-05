@@ -25,7 +25,7 @@ function TakeBtn({
 }: ITakeBtn) {
   return (
     <button
-      className={`cursor-pointer flex justify-center items-center border rounded-full px-1 hover:border-green-500 text-xs ${defaulted ? 'bg-orange-500' : recorded ? 'bg-blue-500' : ''} ${selectedTake[0] === value ? 'border-yellow-500' : 'border-white'}`}
+      className={`cursor-pointer flex justify-center items-center border rounded-full px-1 hover:border-green-500 text-xs ${defaulted ? 'bg-orange-500' : recorded ? 'bg-blue-500' : ''} ${selectedTake[0] === value ? 'border-yellow-500 border-2' : 'border-white'}`}
       onClick={(e) => onClick(e, value, false)}
       onDoubleClick={(e) => onClick(e, value, true)}
       title={placeholder}
