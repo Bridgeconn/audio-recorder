@@ -17,7 +17,7 @@ interface IAudioToolBarProps {
 
 function AudioToolBar({ audioData, selectedVerse }: IAudioToolBarProps) {
   const [control, setControl] = useState('');
-  const [selectedTake, setSelectedTake] = useState('1');
+  const [selectedTake, setSelectedTake] = useState('');
 
   // use effect to find the default take number and set in selectedTake
   useEffect(() => {
