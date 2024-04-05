@@ -78,6 +78,16 @@ export class ScribeAudioEditor {
         switch (e.type) {
           case EditorToExtMSgType.startRecord: {
             const { verse, take } = e.data as RecordTriggerData;
+            const currentVerseData =
+              this.currentChapterVerses?.[0].contents.find(
+                (verseData) => verseData.verseNumber === verse,
+              );
+            const audioData = currentVerseData?.audio;
+            // To check whether current take is default or not & update the take
+            let currentTake = take;
+            if (!audioData) {
+              currentTake = `${take}_default`;
+            }
             const projectDir = await vscode.Uri.joinPath(
               this.projectDirectory,
               'audio',
@@ -87,7 +97,7 @@ export class ScribeAudioEditor {
             );
             const projectFileDir = await vscode.Uri.joinPath(
               projectDir,
-              `${this.currentBC.chapter}_${verse}_${take}.wav`,
+              `${this.currentBC.chapter}_${verse}_${currentTake}.wav`,
             );
 
             // check if dir exist
@@ -114,15 +124,25 @@ export class ScribeAudioEditor {
           case EditorToExtMSgType.stopRecord: {
             const { verse, take } = e.data as RecordTriggerData;
             stopRecord(this.recordingProcess);
+            const currentVerseData =
+              this.currentChapterVerses?.[0].contents.find(
+                (verseData) => verseData.verseNumber === verse,
+              );
+            const audioData = currentVerseData?.audio;
+            // To check whether current take is 1st take then update the take to default
+            let currentTake = take;
+            if (!audioData) {
+              currentTake = `${take}_default`;
+            }
             // If the recorded audio is default then update the metadata
-            if (take.includes('default')) {
+            if (currentTake.includes('default')) {
               const audioFile = await vscode.Uri.joinPath(
                 this.projectDirectory,
                 'audio',
                 'ingredients',
                 this.currentBC.bookId,
                 this.currentBC.chapter.toString(),
-                `${this.currentBC.chapter}_${verse}_${take}.wav`,
+                `${this.currentBC.chapter}_${verse}_${currentTake}.wav`,
               );
               // check if file recorded
               const isFileExist = await vscode.workspace.fs
@@ -138,7 +158,7 @@ export class ScribeAudioEditor {
                   'ingredients',
                   this.currentBC.bookId,
                   this.currentBC.chapter.toString(),
-                  `${this.currentBC.chapter}_${verse}_${take}.wav`,
+                  `${this.currentBC.chapter}_${verse}_${currentTake}.wav`,
                 );
                 const file = await vscode.workspace.fs.readFile(audioFile);
                 const metadata = this.getGlobalState(storageKeys.metadataJSON);

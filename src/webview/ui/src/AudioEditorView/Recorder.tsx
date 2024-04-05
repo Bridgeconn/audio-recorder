@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import Record from '../IconsComponents/Record';
 import Stop from '../IconsComponents/Stop';
 import { EditorToExtMSgType } from '../../../../types/editor';

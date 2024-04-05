@@ -18,13 +18,10 @@ interface IAudioToolBarProps {
 function AudioToolBar({ audioData, selectedVerse }: IAudioToolBarProps) {
   const [control, setControl] = useState('');
   const [selectedTake, setSelectedTake] = useState('1');
-  console.log(audioData);
 
   // use effect to find the default take number and set in selectedTake
   useEffect(() => {
     if (audioData && audioData.default) {
-      console.log('aduio data trigger useeffect ===========>');
-
       setSelectedTake(audioData.default[4]);
     }
   }, []);
@@ -48,7 +45,6 @@ function AudioToolBar({ audioData, selectedVerse }: IAudioToolBarProps) {
   ) => {
     if (doubleClk) {
       if (audioData && audioData[`take${take}`]) {
-        console.log('Audio already available');
         vscode.postMessage({
           type: EditorToExtMSgType.defaultChange,
           data: {
@@ -57,8 +53,6 @@ function AudioToolBar({ audioData, selectedVerse }: IAudioToolBarProps) {
             defaultAudio: audioData.default,
           },
         });
-      } else {
-        console.log('No audio for this take');
       }
     } else {
       if (!audioData) {
@@ -68,8 +62,6 @@ function AudioToolBar({ audioData, selectedVerse }: IAudioToolBarProps) {
       }
     }
   };
-
-  console.log({ selectedTake });
 
   return (
     <div
