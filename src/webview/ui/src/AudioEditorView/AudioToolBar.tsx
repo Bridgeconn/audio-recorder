@@ -74,7 +74,7 @@ function AudioToolBar({ audioData, selectedVerse }: IAudioToolBarProps) {
       <div className="flex-1">
         {audioData?.default && (
           <Waveform
-            url={audioData[audioData['default']]}
+            url={audioData[`take${selectedTake}`]}
             control={control}
             setControl={setControl}
           />
