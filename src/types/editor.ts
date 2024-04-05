@@ -36,12 +36,15 @@ export enum EditorToExtMSgType {
   startRecord = 'trigger to start the record',
   stopRecord = 'trigger to stop the record',
   deleteAudio = 'trigger to delete the audio',
+  defaultChange = 'triggers to change the default audio',
 }
 
 // type EditorUItoExtMsgDataType = EditorToExtMSgType;
 
 export type RecordTriggerData = {
   verse: number;
+  take: string;
+  defaultAudio?: string;
 };
 
 export type EditorUItoExtMsg = {
