@@ -73,7 +73,11 @@ function AudioToolBar({ audioData, selectedVerse }: IAudioToolBarProps) {
       {/* Waves */}
       <div className="flex-1">
         {audioData?.default && (
-          <Waveform url={audioData[`take${selectedTake}`]} control={control} />
+          <Waveform
+            url={audioData[audioData['default']]}
+            control={control}
+            setControl={setControl}
+          />
         )}
       </div>
 
@@ -95,7 +99,7 @@ function AudioToolBar({ audioData, selectedVerse }: IAudioToolBarProps) {
             onClick={() => setControl('play')}
             title="Play"
           >
-            <Play classes="w-5 h-5  stroke-green-500 hover:stroke-green-700" />
+            <Play classes="w-5 h-5  stroke-green-400 hover:stroke-green-600" />
           </button>
         )}
 
@@ -104,7 +108,7 @@ function AudioToolBar({ audioData, selectedVerse }: IAudioToolBarProps) {
           onClick={() => setControl('rewind')}
           title="Rewind"
         >
-          <Rewind classes="w-5 h-5 stroke-red-500 hover:stroke-red-600" />
+          <Rewind classes="w-4 h-4 stroke-green-400 hover:stroke-green-600" />
         </button>
 
         <button
@@ -112,7 +116,7 @@ function AudioToolBar({ audioData, selectedVerse }: IAudioToolBarProps) {
           onClick={() => handleDelete()}
           title="Delete"
         >
-          <Delete classes="w-5 h-5 stroke-red-500 hover:stroke-red-600" />
+          <Delete classes="w-5 h-5 stroke-blue-500 hover:stroke-red-600" />
         </button>
       </div>
 

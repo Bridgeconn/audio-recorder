@@ -32,27 +32,29 @@ function Recorder({ selectedVerse, take }: IRecorderProps) {
 
   return (
     <div className="flex gap-2 items-center">
-      <button
-        className="cursor-pointer flex justify-center items-center"
-        onClick={() => handleStartRecord()}
-        title="Record"
-      >
-        <Record
-          classes={`${
-            recStarted && 'animate-ping'
-          } w-5 h-5 stroke-red-500 hover:stroke-red-700`}
-        />
-      </button>
-
-      <button
-        className={`${
-          recStarted ? 'cursor-pointer' : 'pointer-events-none'
-        } flex justify-center items-center`}
-        onClick={() => handleStopRecord()}
-        title="Stop"
-      >
-        <Stop classes="w-5 h-5  stroke-red-500 hover:stroke-red-700" />
-      </button>
+      {recStarted ? (
+        <button
+          className={`${
+            recStarted ? 'cursor-pointer' : 'pointer-events-none'
+          } flex justify-center items-center`}
+          onClick={() => handleStopRecord()}
+          title="Stop"
+        >
+          <Stop classes="w-6 h-6 stroke-red-500 hover:stroke-gray-700" />
+        </button>
+      ) : (
+        <button
+          className="cursor-pointer flex justify-center items-center"
+          onClick={() => handleStartRecord()}
+          title="Record"
+        >
+          <Record
+            classes={`${
+              recStarted && 'animate-ping'
+            } w-4 h-4 fill-red-500 hover:fill-red-700`}
+          />
+        </button>
+      )}
     </div>
   );
 }
