@@ -19,13 +19,6 @@ function Waveform({ url, control, setControl }: IWaveformProps) {
    * fetch audio data and load wave
    */
   function fetchAudioFile(audioPath: string) {
-    console.log(
-      'audio path : ',
-      audioPath,
-      'current INIT ----------- : ',
-      wavesurfer?.current,
-    );
-
     if (audioPath) {
       fetch(audioPath)
         .then((response) => response.arrayBuffer())
@@ -67,18 +60,10 @@ function Waveform({ url, control, setControl }: IWaveformProps) {
           wavesurfer.current.on('seeking', (time) => {
             setAudioPlayBack(time);
           });
-
-          console.log(
-            'audio path : ',
-            audioPath,
-            'current UPDATED xxxxxxxxxxxxxxxxxxx : ',
-            wavesurfer?.current,
-          );
         });
     } else {
       wavesurfer.current?.destroy();
       wavesurfer.current = null;
-      console.log('NULLEDDDDD ****************', wavesurfer?.current);
     }
   }
 
