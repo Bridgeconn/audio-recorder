@@ -23,6 +23,8 @@ function AudioToolBar({ audioData, selectedVerse }: IAudioToolBarProps) {
   useEffect(() => {
     if (audioData && audioData.default) {
       setSelectedTake(audioData.default[4]);
+    } else {
+      setSelectedTake('1');
     }
   }, []);
 
