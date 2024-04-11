@@ -83,11 +83,15 @@ function AudioToolBar({ audioData, selectedVerse }: IAudioToolBarProps) {
 
       {/* Buttons */}
       <div className="flex gap-2 items-center">
-        <Recorder selectedVerse={selectedVerse} take={selectedTake} />
+        <Recorder
+          selectedVerse={selectedVerse}
+          take={selectedTake}
+          audioPresence={!!audioData?.[`take${selectedTake}`]}
+        />
 
         {control === 'play' ? (
           <button
-            className="cursor-pointer flex justify-center items-center"
+            className={`${audioData?.[`take${selectedTake}`] ? 'cursor-pointer' : 'pointer-events-none'}  flex justify-center items-center`}
             onClick={() => setControl('pause')}
             title="Pause"
           >
@@ -95,28 +99,34 @@ function AudioToolBar({ audioData, selectedVerse }: IAudioToolBarProps) {
           </button>
         ) : (
           <button
-            className="cursor-pointer flex justify-center items-center"
+            className={`${audioData?.[`take${selectedTake}`] ? 'cursor-pointer' : 'pointer-events-none'}  flex justify-center items-center`}
             onClick={() => setControl('play')}
             title="Play"
           >
-            <Play classes="w-5 h-5  stroke-green-400 hover:stroke-green-600" />
+            <Play
+              classes={`w-5 h-5 ${audioData?.[`take${selectedTake}`] ? 'stroke-green-400 hover:stroke-green-600' : 'stroke-gray-500 hover:stroke-gray-600 '}`}
+            />
           </button>
         )}
 
         <button
-          className="cursor-pointer flex justify-center items-center"
+          className={`${audioData?.[`take${selectedTake}`] ? 'cursor-pointer' : 'pointer-events-none'}  flex justify-center items-center`}
           onClick={() => setControl('rewind')}
           title="Rewind"
         >
-          <Rewind classes="w-4 h-4 stroke-green-400 hover:stroke-green-600" />
+          <Rewind
+            classes={`w-4 h-4 ${audioData?.[`take${selectedTake}`] ? 'stroke-green-400 hover:stroke-green-600' : 'stroke-gray-500 hover:stroke-gray-600 '}`}
+          />
         </button>
 
         <button
-          className="cursor-pointer flex justify-center items-center"
+          className={`${audioData?.[`take${selectedTake}`] ? 'cursor-pointer' : 'pointer-events-none'}  flex justify-center items-center`}
           onClick={() => handleDelete()}
           title="Delete"
         >
-          <Delete classes="w-5 h-5 stroke-blue-500 hover:stroke-red-600" />
+          <Delete
+            classes={`w-5 h-5 ${audioData?.[`take${selectedTake}`] ? 'stroke-blue-500 hover:stroke-red-600' : 'stroke-gray-500 hover:stroke-gray-600 '}`}
+          />
         </button>
       </div>
 
