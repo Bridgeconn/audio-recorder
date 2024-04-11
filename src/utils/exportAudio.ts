@@ -120,6 +120,8 @@ async function processExportingAudio(
       vscode.window.showInformationMessage(
         `Project ${_projectName} Exported Succesfully`,
       );
+    } else if (type === 'full') {
+      console.log('FUll Chapter export Triggering ----');
     } else {
       console.error('Type not supported yet');
     }

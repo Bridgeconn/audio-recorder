@@ -5,7 +5,11 @@
   "version": "1.0.0",
   "publisher": "bridgeconn",
   "icon": "images/logo.png",
-  "keywords": ["recorder","audio","bridgeconn"],
+  "keywords": [
+    "recorder",
+    "audio",
+    "bridgeconn"
+  ],
   "engines": {
     "node": ">=18.17.0",
     "vscode": "^1.86.0"
@@ -69,6 +73,11 @@
           "group": "ScribeAudio"
         },
         {
+          "command": "scribe-audio.exportFullProject",
+          "when": "view == audio-explorer-sidebar",
+          "group": "ScribeAudio"
+        },
+        {
           "command": "scribe-audio.importUSFM",
           "when": "view == audio-explorer-sidebar",
           "group": "ScribeAudio"
@@ -107,6 +116,11 @@
       {
         "command": "scribe-audio.exportVerseLevel",
         "title": "Export - Verse Level",
+        "category": "ScribeAudio"
+      },
+      {
+        "command": "scribe-audio.exportFullProject",
+        "title": "Export - Full Project",
         "category": "ScribeAudio"
       },
       {
