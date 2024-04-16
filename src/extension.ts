@@ -241,6 +241,19 @@ export function activate(context: vscode.ExtensionContext) {
   );
 
   /**
+   * Export Chapter Level Project
+   */
+  context.subscriptions.push(
+    vscode.commands.registerCommand(
+      'scribe-audio.exportChapterProject',
+      async () => {
+        vscode.window.showInformationMessage('Chapter Level Export Started');
+        await exportAudio({ type: 'chapter' });
+      },
+    ),
+  );
+
+  /**
    * Import USFM's Command
    */
   context.subscriptions.push(
