@@ -222,7 +222,7 @@ export function activate(context: vscode.ExtensionContext) {
         vscode.window.showInformationMessage(
           'Project Verse Level Export Started',
         );
-        await exportAudio({ type: 'full' });
+        await exportAudio({ type: 'verse' });
       },
     ),
   );
@@ -235,7 +235,7 @@ export function activate(context: vscode.ExtensionContext) {
       'scribe-audio.exportFullProject',
       async () => {
         vscode.window.showInformationMessage('Full Project Export Started');
-        await exportAudio({ type: 'verse' });
+        await exportAudio({ type: 'full' });
       },
     ),
   );

@@ -2,6 +2,7 @@ import * as vscode from 'vscode';
 import { getWorkSpaceFolder } from './common';
 import * as path from 'path';
 import * as fs from 'fs';
+import AdmZip from 'adm-zip';
 
 type IExportType = 'verse' | 'chapter' | 'full';
 
@@ -87,44 +88,102 @@ async function processExportingAudio(
   _projectName: string,
 ) {
   try {
+    // common steps
+    // create project name folder if not exist
+    if (!projectTargetPath) {
+      fs.mkdirSync(projectTargetPath);
+    }
+
+    // copy text1 to target
+    if (fs.existsSync(text1Path)) {
+      await vscode.workspace.fs.copy(
+        vscode.Uri.parse(text1Path),
+        vscode.Uri.parse(path.join(projectTargetPath, 'text-1')),
+      );
+    }
+
     // export for verse level default verse
     if (type === 'verse') {
-      // copy text1 to target
-      if (fs.existsSync(text1Path)) {
-        await vscode.workspace.fs.copy(
-          vscode.Uri.parse(text1Path),
-          vscode.Uri.parse(path.join(projectTargetPath, 'text-1')),
-        );
-      } else {
-        fs.mkdirSync(projectTargetPath);
-      }
-
       // Copy Audios ingredients
       await exportFilestoTargetPath(
         audioPath,
         path.join(projectTargetPath, 'audio', 'ingredients'),
       );
-
-      // change revision in metadata before save
-      const id = Object.keys(metaDataJson.identification.primary.scribe)[0];
-      metaDataJson.identification.primary.scribe[id].revision = (
-        parseInt(metaDataJson.identification.primary.scribe[id].revision) + 1
-      ).toString();
-
-      // update meta and write to target
-      fs.writeFileSync(
-        path.join(projectTargetPath, 'metadata.json'),
-        JSON.stringify(metaDataJson),
-      );
-
-      vscode.window.showInformationMessage(
-        `Project ${_projectName} Exported Succesfully`,
-      );
     } else if (type === 'full') {
       console.log('FUll Chapter export Triggering ----');
+      /**
+       * Fodler structure expecting:
+       * projectName
+       *    metadata
+       *    text-1
+       *    ingredients
+       *        scribe_internal_audio.zip - complete audios zip
+       *        license
+       *        settings (not now)
+       *        versification
+       */
+
+      // zipping audios
+      const zip = new AdmZip();
+
+      fs.mkdirSync(path.join(projectTargetPath, 'ingredients'));
+
+      // read all the directory from source/audio/ingredients
+      const directories = fs
+        .readdirSync(path.join(audioPath), {
+          withFileTypes: true,
+        })
+        .filter((item) => item.isDirectory())
+        .map((item) => item.name);
+
+      // creating zip
+      directories.forEach((sourceDir) => {
+        zip.addLocalFolder(path.join(audioPath, sourceDir), sourceDir);
+      });
+
+      // write zip to target/ingredients
+      zip.writeZip(
+        path.join(path.join(projectTargetPath, 'ingredients'), 'audios.zip'),
+      );
+
+      // copy all other files from source/audio/ingredients
+      // read all files from
+      const files = await vscode.workspace.fs.readDirectory(
+        vscode.Uri.parse(audioPath),
+      );
+      for (const file of files) {
+        const currentSource = path.join(audioPath, file[0]);
+        // in zip the path will be like :  target/audio/ingredients => target/ingredients
+        const currentDestination = path.join(
+          projectTargetPath,
+          'ingredients',
+          file[0],
+        );
+        if (file[1] === 1) {
+          // type is a file
+          fs.copyFileSync(currentSource, currentDestination);
+        }
+      }
     } else {
       console.error('Type not supported yet');
+      throw new Error('Type not supported yet');
     }
+
+    // change revision in metadata before save
+    const id = Object.keys(metaDataJson.identification.primary.scribe)[0];
+    metaDataJson.identification.primary.scribe[id].revision = (
+      parseInt(metaDataJson.identification.primary.scribe[id].revision) + 1
+    ).toString();
+
+    // update meta and write to target
+    fs.writeFileSync(
+      path.join(projectTargetPath, 'metadata.json'),
+      JSON.stringify(metaDataJson),
+    );
+
+    vscode.window.showInformationMessage(
+      `Project ${_projectName} Exported Succesfully`,
+    );
   } catch (err) {
     // for any error if the target path exist delete it and throw failed export messge
     if (projectTargetPath && fs.existsSync(projectTargetPath)) {
@@ -132,6 +191,7 @@ async function processExportingAudio(
         recursive: true,
       });
     }
+    console.error('Export Error : ', err);
     vscode.window.showErrorMessage(
       'Project Export Failed. Please check the folder have same content.',
     );

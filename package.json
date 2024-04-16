@@ -143,6 +143,7 @@
     "test": "vscode-test"
   },
   "devDependencies": {
+    "@types/adm-zip": "^0.5.5",
     "@types/mocha": "^10.0.6",
     "@types/node": "18.x",
     "@types/uuid": "^9.0.8",
@@ -160,6 +161,7 @@
   },
   "dependencies": {
     "@vscode/webview-ui-toolkit": "^1.4.0",
+    "adm-zip": "^0.5.12",
     "fluent-ffmpeg": "^2.1.2",
     "md5": "^2.3.0",
     "moment": "^2.30.1",
