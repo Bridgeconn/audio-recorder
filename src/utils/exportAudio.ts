@@ -90,7 +90,7 @@ async function processExportingAudio(
   try {
     // common steps
     // create project name folder if not exist
-    if (!projectTargetPath) {
+    if (!fs.existsSync(projectTargetPath)) {
       fs.mkdirSync(projectTargetPath);
     }
 
