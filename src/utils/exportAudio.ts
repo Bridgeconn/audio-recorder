@@ -3,6 +3,7 @@ import { getWorkSpaceFolder } from './common';
 import * as path from 'path';
 import * as fs from 'fs';
 import AdmZip from 'adm-zip';
+import { ExportFormats } from '../types/project';
 
 type IExportType = 'verse' | 'chapter' | 'full';
 
@@ -307,4 +308,28 @@ export async function exportAudio({ type }: IExportAudio) {
       _projectName,
     );
   }
+}
+
+/**
+ * dialog and options selection modal for Chapter Level
+ */
+export async function triggerChapterLevelExportModal() {
+  console.log('triggered CH Level Modal function =========');
+
+  // show quick pick to select Export Audio Type
+  const audioFormatPicker = await vscode.window.showQuickPick(
+    Object.values(ExportFormats),
+    {
+      placeHolder: 'Select Export Format',
+    },
+  );
+  if (!audioFormatPicker) {
+    return;
+  }
+
+  console.log('selected Format : ', audioFormatPicker);
+
+  // show quick pick to select multi selection - show available books with audio - reuturn [book1, book2]
+
+  // await exportAudio({ type: 'chapter' });
 }
