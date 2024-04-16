@@ -13,10 +13,7 @@ import {
 } from './provider/Editor/scribeAudioEditor';
 import { NavigationWebViewProvider } from './provider/Navigation/navigationWebViewProvider';
 import { storageKeys } from './types/storage';
-import {
-  exportAudio,
-  triggerChapterLevelExportModal,
-} from './utils/exportAudio';
+import { exportAudio } from './utils/exportAudio';
 import { importUSFM } from './utils/importUSFM';
 
 // get root path of opened workspace in vscode
@@ -251,7 +248,7 @@ export function activate(context: vscode.ExtensionContext) {
       'scribe-audio.exportChapterProject',
       async () => {
         // vscode.window.showInformationMessage('Chapter Level Export Started');
-        await triggerChapterLevelExportModal();
+        await exportAudio({ type: 'chapter' });
       },
     ),
   );

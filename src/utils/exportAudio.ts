@@ -200,6 +200,70 @@ async function processExportingAudio(
 }
 
 /**
+ * dialog and options selection modal for Chapter Level
+ */
+export async function triggerChapterLevelExportModal(audioPath: string) {
+  try {
+    console.log('triggered CH Level Modal function =========');
+
+    const avaialbeBooksInDir: string[] = [];
+
+    // show quick pick to select Export Audio Type
+    const audioFormatPicker = await vscode.window.showQuickPick(
+      Object.values(ExportFormats),
+      {
+        placeHolder: 'Select Export Format',
+      },
+    );
+    if (!audioFormatPicker) {
+      return;
+    }
+
+    console.log('selected Format : ', audioFormatPicker);
+
+    // show quick pick to select multi selection - show available books with audio - reuturn [book1, book2]
+    // read folders from source/audio/ingredients -> only folders with audio will be there and the folder name will be BookCode
+    const avaialbeBooks = await vscode.workspace.fs.readDirectory(
+      vscode.Uri.parse(audioPath),
+    );
+
+    for (const file of avaialbeBooks) {
+      // file => [DiretoryName, fileType]
+      //  fileType : 1 => file , 2 => dir
+      if (file[1] === 2) {
+        avaialbeBooksInDir.push(file[0]);
+      }
+    }
+
+    // No books available to export => auto abort export
+    if (avaialbeBooks.length === 0) {
+      return false;
+    }
+
+    // quick pick for multi select books
+    // show quick pick to select Export Audio Type
+    const userSelectedBooks = await vscode.window.showQuickPick(
+      avaialbeBooksInDir,
+      {
+        placeHolder: 'Select Books To Export',
+        canPickMany: true,
+      },
+    );
+    if (!audioFormatPicker) {
+      return;
+    }
+
+    return userSelectedBooks;
+  } catch (err) {
+    // return false to stop export fucntion : in case of error
+    console.error('Err in CH Lev Options seelction : ', err);
+
+    return [];
+  }
+  // await exportAudio({ type: 'chapter' });
+}
+
+/**
  * function to export Audio
  * Common Function handle export based on type value
  */
@@ -246,6 +310,15 @@ export async function exportAudio({ type }: IExportAudio) {
   const metaDataJson = JSON.parse(metadataFile.toString());
 
   const _projectName = metaDataJson.identification.name.en;
+
+  // chapter Level Audio Specific option selection
+  const userSelectedBooks = await triggerChapterLevelExportModal(audioPath);
+  if (!userSelectedBooks || userSelectedBooks.length === 0) {
+    vscode.window.showErrorMessage(
+      'No Audio Avaiable to Export or No books selected',
+    );
+    return;
+  }
 
   // prompt to select Dir to export
   const exportDirPath = await selectDirectory();
@@ -308,28 +381,4 @@ export async function exportAudio({ type }: IExportAudio) {
       _projectName,
     );
   }
-}
-
-/**
- * dialog and options selection modal for Chapter Level
- */
-export async function triggerChapterLevelExportModal() {
-  console.log('triggered CH Level Modal function =========');
-
-  // show quick pick to select Export Audio Type
-  const audioFormatPicker = await vscode.window.showQuickPick(
-    Object.values(ExportFormats),
-    {
-      placeHolder: 'Select Export Format',
-    },
-  );
-  if (!audioFormatPicker) {
-    return;
-  }
-
-  console.log('selected Format : ', audioFormatPicker);
-
-  // show quick pick to select multi selection - show available books with audio - reuturn [book1, book2]
-
-  // await exportAudio({ type: 'chapter' });
 }
