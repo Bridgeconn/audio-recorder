@@ -228,6 +228,19 @@ export function activate(context: vscode.ExtensionContext) {
   );
 
   /**
+   * Export Full Project
+   */
+  context.subscriptions.push(
+    vscode.commands.registerCommand(
+      'scribe-audio.exportFullProject',
+      async () => {
+        vscode.window.showInformationMessage('Full Project Export Started');
+        await exportAudio({ type: 'full' });
+      },
+    ),
+  );
+
+  /**
    * Import USFM's Command
    */
   context.subscriptions.push(
