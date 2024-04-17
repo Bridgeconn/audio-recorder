@@ -2,10 +2,14 @@
   "name": "scribe-audio",
   "displayName": "Scribe Audio Recorder",
   "description": "Scribe Audio Extension is to provide audio recording features in Visual Studio Code. This extension allows users to record audio straight from the editor for translation purposes. This extension can create audio projects of Scripture Burrito standard.",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "publisher": "bridgeconn",
   "icon": "images/logo.png",
-  "keywords": ["recorder","audio","bridgeconn"],
+  "keywords": [
+    "recorder",
+    "audio",
+    "bridgeconn"
+  ],
   "engines": {
     "node": ">=18.17.0",
     "vscode": "^1.86.0"
@@ -69,6 +73,11 @@
           "group": "ScribeAudio"
         },
         {
+          "command": "scribe-audio.exportFullProject",
+          "when": "view == audio-explorer-sidebar",
+          "group": "ScribeAudio"
+        },
+        {
           "command": "scribe-audio.importUSFM",
           "when": "view == audio-explorer-sidebar",
           "group": "ScribeAudio"
@@ -110,6 +119,11 @@
         "category": "ScribeAudio"
       },
       {
+        "command": "scribe-audio.exportFullProject",
+        "title": "Export - Full Project",
+        "category": "ScribeAudio"
+      },
+      {
         "command": "scribe-audio.importUSFM",
         "title": "Import USFM's",
         "category": "ScribeAudio"
@@ -129,6 +143,7 @@
     "test": "vscode-test"
   },
   "devDependencies": {
+    "@types/adm-zip": "^0.5.5",
     "@types/mocha": "^10.0.6",
     "@types/node": "18.x",
     "@types/uuid": "^9.0.8",
@@ -146,6 +161,7 @@
   },
   "dependencies": {
     "@vscode/webview-ui-toolkit": "^1.4.0",
+    "adm-zip": "^0.5.12",
     "fluent-ffmpeg": "^2.1.2",
     "md5": "^2.3.0",
     "moment": "^2.30.1",

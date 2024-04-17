@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { IAudioData } from '../../../../types/editor';
 import Delete from '../IconsComponents/Delete';
 import Pause from '../IconsComponents/Pause';
@@ -8,6 +8,7 @@ import Waveform from './Waveform';
 import Recorder from './Recorder';
 import { vscode } from '../provider/vscodewebprovider';
 import { EditorToExtMSgType } from '../../../../types/editor';
+import TakeButton from '../components/buttons/takeBtn';
 
 interface IAudioToolBarProps {
   audioData: IAudioData | undefined;
@@ -16,12 +17,52 @@ interface IAudioToolBarProps {
 
 function AudioToolBar({ audioData, selectedVerse }: IAudioToolBarProps) {
   const [control, setControl] = useState('');
+  const [selectedTake, setSelectedTake] = useState('');
+
+  // use effect to find the default take number and set in selectedTake
+  useEffect(() => {
+    if (audioData && audioData.default) {
+      setSelectedTake(audioData.default[4]);
+    } else {
+      setSelectedTake('1');
+    }
+  }, []);
 
   const handleDelete = () => {
+    // To check whether current take is default or not & update the take
+    let currentTake = selectedTake;
+    if (audioData?.default?.includes(selectedTake)) {
+      currentTake = `${selectedTake}_default`;
+    }
     vscode.postMessage({
       type: EditorToExtMSgType.deleteAudio,
-      data: { verse: selectedVerse },
+      data: { verse: selectedVerse, take: currentTake },
     });
+  };
+
+  const handleTakeClick = (
+    e: React.MouseEvent<HTMLElement>,
+    take: '1' | '2' | '3',
+    doubleClk = false,
+  ) => {
+    if (doubleClk) {
+      if (audioData && audioData[`take${take}`]) {
+        vscode.postMessage({
+          type: EditorToExtMSgType.defaultChange,
+          data: {
+            verse: selectedVerse,
+            take: take,
+            defaultAudio: audioData.default,
+          },
+        });
+      }
+    } else {
+      if (!audioData) {
+        setSelectedTake(`${take}_default`);
+      } else {
+        setSelectedTake(take);
+      }
+    }
   };
 
   return (
@@ -32,17 +73,25 @@ function AudioToolBar({ audioData, selectedVerse }: IAudioToolBarProps) {
       {/* Waves */}
       <div className="flex-1">
         {audioData?.default && (
-          <Waveform url={audioData[audioData['default']]} control={control} />
+          <Waveform
+            url={audioData[`take${selectedTake}`]}
+            control={control}
+            setControl={setControl}
+          />
         )}
       </div>
 
       {/* Buttons */}
       <div className="flex gap-2 items-center">
-        <Recorder selectedVerse={selectedVerse} />
+        <Recorder
+          selectedVerse={selectedVerse}
+          take={selectedTake}
+          audioPresence={!!audioData?.[`take${selectedTake}`]}
+        />
 
         {control === 'play' ? (
           <button
-            className="cursor-pointer flex justify-center items-center"
+            className={`${audioData?.[`take${selectedTake}`] ? 'cursor-pointer' : 'pointer-events-none'}  flex justify-center items-center`}
             onClick={() => setControl('pause')}
             title="Pause"
           >
@@ -50,29 +99,66 @@ function AudioToolBar({ audioData, selectedVerse }: IAudioToolBarProps) {
           </button>
         ) : (
           <button
-            className="cursor-pointer flex justify-center items-center"
+            className={`${audioData?.[`take${selectedTake}`] ? 'cursor-pointer' : 'pointer-events-none'}  flex justify-center items-center`}
             onClick={() => setControl('play')}
             title="Play"
           >
-            <Play classes="w-5 h-5  stroke-green-500 hover:stroke-green-700" />
+            <Play
+              classes={`w-5 h-5 ${audioData?.[`take${selectedTake}`] ? 'stroke-green-400 hover:stroke-green-600' : 'stroke-gray-500 hover:stroke-gray-600 '}`}
+            />
           </button>
         )}
 
         <button
-          className="cursor-pointer flex justify-center items-center"
+          className={`${audioData?.[`take${selectedTake}`] ? 'cursor-pointer' : 'pointer-events-none'}  flex justify-center items-center`}
           onClick={() => setControl('rewind')}
           title="Rewind"
         >
-          <Rewind classes="w-5 h-5 stroke-red-500 hover:stroke-red-600" />
+          <Rewind
+            classes={`w-4 h-4 ${audioData?.[`take${selectedTake}`] ? 'stroke-green-400 hover:stroke-green-600' : 'stroke-gray-500 hover:stroke-gray-600 '}`}
+          />
         </button>
 
         <button
-          className="cursor-pointer flex justify-center items-center"
+          className={`${audioData?.[`take${selectedTake}`] ? 'cursor-pointer' : 'pointer-events-none'}  flex justify-center items-center`}
           onClick={() => handleDelete()}
           title="Delete"
         >
-          <Delete classes="w-5 h-5 stroke-red-500 hover:stroke-red-600" />
+          <Delete
+            classes={`w-5 h-5 ${audioData?.[`take${selectedTake}`] ? 'stroke-blue-500 hover:stroke-red-600' : 'stroke-gray-500 hover:stroke-gray-600 '}`}
+          />
         </button>
+      </div>
+
+      {/* takes */}
+      <div className="flex gap-2 items-center">
+        <TakeButton
+          text="A"
+          placeholder="Take A"
+          value="1"
+          selectedTake={selectedTake}
+          onClick={handleTakeClick}
+          defaulted={audioData?.default === 'take1'}
+          recorded={audioData?.take1 ? true : false}
+        />
+        <TakeButton
+          text="B"
+          placeholder="Take B"
+          value="2"
+          selectedTake={selectedTake}
+          onClick={handleTakeClick}
+          defaulted={audioData?.default === 'take2'}
+          recorded={audioData?.take2 ? true : false}
+        />
+        <TakeButton
+          text="C"
+          placeholder="Take C"
+          value="3"
+          selectedTake={selectedTake}
+          onClick={handleTakeClick}
+          defaulted={audioData?.default === 'take3'}
+          recorded={audioData?.take3 ? true : false}
+        />
       </div>
     </div>
   );
