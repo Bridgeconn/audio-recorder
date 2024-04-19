@@ -18,18 +18,36 @@ export const getVersification = async (
     return;
   }
 
-  const versificationUri = vscode.Uri.joinPath(
-    workspaceRootUri,
-    'audio',
-    'ingredients',
-    'versification.json',
+  if (metadata.type.flavorType.flavor.name !== 'audioTranslation') {
+    vscode.window.showErrorMessage(
+      'Audio metadata not found. Please open valid audio project or create new audio project',
+    );
+    return;
+  }
+
+  // Reading the versification path from metadata
+  const versificationPath = Object.keys(metadata.ingredients).find((key) =>
+    key.includes('versification.json'),
   );
+
+  const pathArray =
+    versificationPath && versificationPath.split(/[(\\)?(\/)?]/);
+
+  const versificationUri =
+    pathArray && pathArray.length > 0
+      ? vscode.Uri.joinPath(workspaceRootUri, ...pathArray)
+      : vscode.Uri.joinPath(
+          workspaceRootUri,
+          'audio',
+          'ingredients',
+          'versification.json',
+        );
 
   const versificationJson =
     await vscode.workspace.fs.readFile(versificationUri);
   if (!versificationJson) {
     vscode.window.showErrorMessage(
-      'Versification not found. Please open valid audio workspace or creare new audio project',
+      'Versification not found. Please open valid audio workspace or create new audio project',
     );
     return;
   }

@@ -11,7 +11,7 @@ import { Bible } from '../types/versification';
 
 import * as path from 'path';
 import { storageKeys } from '../types/storage';
-
+const md5 = require('md5');
 /**
  * Function use vscode native input collection and get project details
  */
@@ -183,7 +183,7 @@ export async function createNewAudioProject(
   // TODO : Add provision later to select scopes
   const selectedScope = await generateProjectScope(currentScope);
 
-  const newProjectMeta: object = {
+  const newProjectMeta: any = {
     format: 'scripture burrito',
     meta: {
       version: '1.0.0',
@@ -315,6 +315,42 @@ export async function createNewAudioProject(
           vscode.Uri.joinPath(audioContentDirPath, 'versification.json'),
         )
         .then(async () => {
+          // Adding the versification in metadata
+          const file = await vscode.workspace.fs.readFile(
+            vscode.Uri.joinPath(audioContentDirPath, 'versification.json'),
+          );
+
+          const isFileExist = await vscode.workspace.fs
+            .stat(
+              vscode.Uri.joinPath(audioContentDirPath, 'versification.json'),
+            )
+            .then(
+              (value) => value,
+              () => false,
+            );
+
+          newProjectMeta.ingredients[
+            path.join('audio', 'ingredients', 'versification.json')
+          ] = {
+            checksum: { md5: md5(file) },
+            mimeType: 'application/json',
+            size:
+              isFileExist && typeof isFileExist !== 'boolean'
+                ? isFileExist?.size
+                : 0,
+            role: 'x-versification',
+          };
+
+          const newProjectFileData = Buffer.from(
+            JSON.stringify(newProjectMeta, null, 4),
+            'utf8',
+          );
+
+          vscode.workspace.fs.writeFile(
+            projectMetadataPath,
+            newProjectFileData,
+          );
+
           vscode.window.showInformationMessage(
             `Project created at ${WORKSPACE_FOLDER.uri}`,
           );

@@ -109,8 +109,9 @@ export async function importUSFM(context: vscode.ExtensionContext) {
           }
 
           vscode.window.showInformationMessage(
-            `Imported USFM of Book -${bookId} successfully`,
+            `Imported ${bookId} successfully`,
           );
+          vscode.commands.executeCommand('scribe-audio.openAudioEditor');
         });
       }
     } else {

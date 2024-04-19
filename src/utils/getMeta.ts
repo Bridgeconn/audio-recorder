@@ -18,7 +18,7 @@ export async function getProjectMeta(context: vscode.ExtensionContext) {
   const metaJson = await vscode.workspace.fs.readFile(metaUri);
   if (!metaJson) {
     vscode.window.showErrorMessage(
-      'Versification not found. Please open valid audio workspace or creare new audio project',
+      'Audio metadata not found. Please open valid audio workspace or create new audio project',
     );
     return;
   }
@@ -26,6 +26,12 @@ export async function getProjectMeta(context: vscode.ExtensionContext) {
   //   TODO : metadata need to be load on extension start and store in extension / workspace global store
 
   const parsedMeta = JSON.parse(metaJson.toString());
+
+  if (parsedMeta.type.flavorType.flavor.name === 'audioTranslation') {
+    vscode.commands.executeCommand(
+      'workbench.view.extension.audio-explorer-sidebar-view',
+    );
+  }
 
   return parsedMeta;
 }
