@@ -9,6 +9,7 @@ import Recorder from './Recorder';
 import { vscode } from '../provider/vscodewebprovider';
 import { EditorToExtMSgType } from '../../../../types/editor';
 import TakeButton from '../components/buttons/takeBtn';
+import RecordingWave from './RecordingWave';
 
 interface IAudioToolBarProps {
   audioData: IAudioData | undefined;
@@ -79,6 +80,7 @@ function AudioToolBar({ audioData, selectedVerse }: IAudioToolBarProps) {
             setControl={setControl}
           />
         )}
+        <RecordingWave />
       </div>
 
       {/* Buttons */}
