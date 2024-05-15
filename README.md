@@ -2,7 +2,7 @@
 
 ---
 
-`Scribe Audio Extension` is to provide audio recording features in [Visual Studio Code](https://code.visualstudio.com/). This extension allows users to record audio straight from the editor for translation purposes. This extension can create audio projects of [Scripture Burrito](https://docs.burrito.bible/en/latest/) standard.
+`Scribe Audio Extension` is to provide audio recording features in [Visual Studio Code](https://code.visualstudio.com/) and in [OpenVSX market place](https://open-vsx.org/). This extension allows users to record audio straight from the editor for translation purposes. This extension can create audio projects of [Scripture Burrito](https://docs.burrito.bible/en/latest/) standard.
 
 ![img](doc/AudioRecExtn.png)
 
@@ -12,13 +12,16 @@
 
 - Audio recording by using system microphone 🎙
 - Simple controls to
-  - Record / Re Record 🎤
+  - Record 🎤
   - Play ▶
   - Stop ⏹
   - Pause ⏸
   - Rewind ↺
   - Delete 🗑
+  - Takes 
 - Verse Level Export
+- Full Project Export
+- Record audio with multiple takes
 - Import [USFM](https://ubsicap.github.io/usfm/) support
 - [Scripture Burrito Standard](https://docs.burrito.bible/en/latest/)
 - User Friendly Interface
@@ -61,14 +64,11 @@
 
 1. Export Feature
    - Chapter Level Export (with Timestamp csv / tsv)
-   - Full Project Export
    - Multi format export
 2. Audio Conversion
-3. Audio SPlit and Merge
-4. Record audio with multiple takes
-5. Import USFM for Reference
-6. Hot Keys Support
-7. Auto Transcription
+3. Audio Split and Merge
+4. Hot Keys Support
+5. Auto Transcription
 
 ## Contributors
 
@@ -78,8 +78,5 @@
 <a href="https://github.com/sijumoncy"><img src="https://avatars.githubusercontent.com/u/72241997?s=64&v=4" title="Siju Moncy" width="50" height="50"></a>
 <a href="https://github.com/Beenamol"><img src="https://avatars.githubusercontent.com/u/86401125?s=64&v=4" title="Beena Ashish" width="50" height="50"></a>
 <a href="https://github.com/svishnu06"><img src="https://avatars.githubusercontent.com/u/24819164?v=4" title="Vishnu" width="50" height="50"></a>
-<a href="https://github.com/Bobbykumar706584"><img src="https://avatars.githubusercontent.com/u/55685788?v=4" title="Bobby" width="50" height="50"></a>
-<a href="https://github.com/Poojanavgurukul"><img src="https://avatars.githubusercontent.com/u/34941343?v=4" title="Pooja" width="50" height="50"></a>
-<a href="https://github.com/AnjumolSree"><img src="https://avatars.githubusercontent.com/u/141258024?v=4" title="Anjumol" width="50" height="50"></a>
 
 **Enjoy!**
