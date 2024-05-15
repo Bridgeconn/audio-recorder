@@ -126,7 +126,9 @@ function Waveform({ url, control, setControl }: IWaveformProps) {
         {audioMeta?.duration &&
           (formatAudioDuration(audioMeta.duration) as string)}
       </div> */}
-      <div className="">{formatAudioDuration(audioPlayBack) as string}</div>
+      {url && (
+        <div className="">{formatAudioDuration(audioPlayBack) as string}</div>
+      )}
     </div>
   );
 }
