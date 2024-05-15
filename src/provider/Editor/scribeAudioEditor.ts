@@ -118,12 +118,30 @@ export class ScribeAudioEditor {
                 "Scribe Extension's Project",
               this.metadataJson?.meta.generator.userName,
             );
+            // This is to indicate recording started
+            if (this.panel?.webview) {
+              this.postMessage(this.panel?.webview, {
+                type: ExttoEditorWebMsgTypes.RecordingFlag,
+                data: {
+                  recordingFlag: true,
+                },
+              });
+            }
             break;
           }
 
           case EditorToExtMSgType.stopRecord: {
             const { verse, take } = e.data as RecordTriggerData;
             stopRecord(this.recordingProcess);
+            // This is to indicate recording stopped
+            if (this.panel?.webview) {
+              this.postMessage(this.panel?.webview, {
+                type: ExttoEditorWebMsgTypes.RecordingFlag,
+                data: {
+                  recordingFlag: false,
+                },
+              });
+            }
             const currentVerseData =
               this.currentChapterVerses?.[0].contents.find(
                 (verseData) => verseData.verseNumber === verse,

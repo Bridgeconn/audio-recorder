@@ -8,6 +8,7 @@ import {
 import { getVersification } from './functions/getVersification';
 import { getProjectMeta } from '../../utils/getMeta';
 import { storageKeys } from '../../types/storage';
+import { initializeStateStore } from '../../store/stateStore';
 
 export class NavigationWebViewProvider implements vscode.WebviewViewProvider {
   /**
@@ -50,7 +51,10 @@ export class NavigationWebViewProvider implements vscode.WebviewViewProvider {
      * Handle recieve message from webview
      */
     webviewPanel.webview.onDidReceiveMessage(
-      async (e: { type: NavWebToExtMsgTypes; data: unknown }) => {
+      async (e: {
+        type: NavWebToExtMsgTypes;
+        data: { bookId: string; chapter: number };
+      }) => {
         switch (e.type) {
           case NavWebToExtMsgTypes.FetchVersification: {
             // TODO : Change the versifcation to constructor on load and keep the data in storage
@@ -71,6 +75,18 @@ export class NavigationWebViewProvider implements vscode.WebviewViewProvider {
 
           case NavWebToExtMsgTypes.BCSelection: {
             this.updateGlobalState(storageKeys.currentBC, e.data);
+            // Pushing to shared Global state for connecting reference
+            initializeStateStore().then(
+              ({ updateStoreState, getStoreState }) => {
+                updateStoreState({
+                  key: 'verseRef',
+                  value: {
+                    verseRef: `${e.data.bookId.toUpperCase()} ${e.data.chapter}:1`,
+                    uri: '',
+                  },
+                });
+              },
+            );
             vscode.commands.executeCommand('scribe-audio.openAudioEditor');
             break;
           }
