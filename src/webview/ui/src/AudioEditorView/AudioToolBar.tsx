@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { IAudioData } from '../../../../types/editor';
+import { ExttoEditorWebMsgTypes, IAudioData } from '../../../../types/editor';
 import Delete from '../IconsComponents/Delete';
 import Pause from '../IconsComponents/Pause';
 import Play from '../IconsComponents/Play';
@@ -9,7 +9,7 @@ import Recorder from './Recorder';
 import { vscode } from '../provider/vscodewebprovider';
 import { EditorToExtMSgType } from '../../../../types/editor';
 import TakeButton from '../components/buttons/takeBtn';
-
+import Timer from './Timer';
 interface IAudioToolBarProps {
   audioData: IAudioData | undefined;
   selectedVerse: number;
@@ -18,6 +18,7 @@ interface IAudioToolBarProps {
 function AudioToolBar({ audioData, selectedVerse }: IAudioToolBarProps) {
   const [control, setControl] = useState('');
   const [selectedTake, setSelectedTake] = useState('');
+  const [isRecording, setIsRecording] = useState(false);
 
   // use effect to find the default take number and set in selectedTake
   useEffect(() => {
@@ -26,6 +27,30 @@ function AudioToolBar({ audioData, selectedVerse }: IAudioToolBarProps) {
     } else {
       setSelectedTake('1');
     }
+
+    const handleExtensionPostMessages = (event: MessageEvent) => {
+      const { type, data } = event.data;
+      switch (type) {
+        case ExttoEditorWebMsgTypes.RecordingFlag: {
+          console.log('data', data);
+
+          // processed vesification data from workspace dir
+          setIsRecording(data.recordingFlag);
+          break;
+        }
+
+        default:
+          break;
+      }
+    };
+
+    // add listener for the event
+    window.addEventListener('message', handleExtensionPostMessages);
+
+    return () => {
+      // clean up event listener
+      window.removeEventListener('message', handleExtensionPostMessages);
+    };
   }, []);
 
   const handleDelete = () => {
@@ -79,6 +104,7 @@ function AudioToolBar({ audioData, selectedVerse }: IAudioToolBarProps) {
             setControl={setControl}
           />
         )}
+        {isRecording && <Timer isRunning={isRecording} />}
       </div>
 
       {/* Buttons */}

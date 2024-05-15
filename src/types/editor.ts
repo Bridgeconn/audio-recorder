@@ -19,16 +19,23 @@ export interface IChapterdata {
   contents: IVerseData[];
 }
 
+export interface IRecordingFlag {
+  recordingFlag: string;
+}
+
 // Message Types from Ext to UI
 export enum ExttoEditorWebMsgTypes {
   ChapterData = 'Chapter Data of IChapterdata',
+  RecordingFlag = 'Recording URL for displaying waveform',
 }
 
-type ExtToEditorMsgDataType = ExttoEditorWebMsgTypes.ChapterData;
+type ExtToEditorMsgDataType =
+  | ExttoEditorWebMsgTypes.ChapterData
+  | ExttoEditorWebMsgTypes.RecordingFlag;
 
 export type ExtToNavMsg = {
   type: ExtToEditorMsgDataType;
-  data: IChapterdata;
+  data: IChapterdata | IRecordingFlag;
 };
 
 // Message Type From UI to Extension
