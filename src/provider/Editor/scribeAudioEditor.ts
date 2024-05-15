@@ -85,7 +85,7 @@ export class ScribeAudioEditor {
             const audioData = currentVerseData?.audio;
             // To check whether current take is default or not & update the take
             let currentTake = take;
-            if (!audioData) {
+            if (!audioData && !take.includes('default')) {
               currentTake = `${take}_default`;
             }
             const projectDir = await vscode.Uri.joinPath(

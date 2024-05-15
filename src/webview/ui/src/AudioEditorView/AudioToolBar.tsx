@@ -20,9 +20,13 @@ function AudioToolBar({ audioData, selectedVerse }: IAudioToolBarProps) {
   const [selectedTake, setSelectedTake] = useState('');
   const [isRecording, setIsRecording] = useState(false);
 
+  console.log('audio data ==========> ', audioData, selectedTake);
+
   // use effect to find the default take number and set in selectedTake
   useEffect(() => {
     if (audioData && audioData.default) {
+      console.log('here useefect ========> ', audioData.default[4]);
+
       setSelectedTake(audioData.default[4]);
     } else {
       setSelectedTake('1');
@@ -51,7 +55,7 @@ function AudioToolBar({ audioData, selectedVerse }: IAudioToolBarProps) {
       // clean up event listener
       window.removeEventListener('message', handleExtensionPostMessages);
     };
-  }, []);
+  }, [audioData]);
 
   const handleDelete = () => {
     // To check whether current take is default or not & update the take
@@ -89,6 +93,8 @@ function AudioToolBar({ audioData, selectedVerse }: IAudioToolBarProps) {
       }
     }
   };
+
+  console.log('on single click take selction ==============> ', selectedTake);
 
   return (
     <div
