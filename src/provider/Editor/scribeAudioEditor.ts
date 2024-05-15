@@ -124,6 +124,7 @@ export class ScribeAudioEditor {
                 type: ExttoEditorWebMsgTypes.RecordingFlag,
                 data: {
                   recordingFlag: true,
+                  take: take,
                 },
               });
             }
@@ -139,6 +140,7 @@ export class ScribeAudioEditor {
                 type: ExttoEditorWebMsgTypes.RecordingFlag,
                 data: {
                   recordingFlag: false,
+                  take: take,
                 },
               });
             }

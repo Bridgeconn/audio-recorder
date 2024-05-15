@@ -20,15 +20,13 @@ function AudioToolBar({ audioData, selectedVerse }: IAudioToolBarProps) {
   const [selectedTake, setSelectedTake] = useState('');
   const [isRecording, setIsRecording] = useState(false);
 
-  console.log('audio data ==========> ', audioData, selectedTake);
-
   // use effect to find the default take number and set in selectedTake
   useEffect(() => {
     if (audioData && audioData.default) {
-      console.log('here useefect ========> ', audioData.default[4]);
-
+      // auto selection of efault audio take on initial render
       setSelectedTake(audioData.default[4]);
     } else {
+      // if no recorder audio for verse , kept take 1 as initial
       setSelectedTake('1');
     }
 
@@ -36,8 +34,10 @@ function AudioToolBar({ audioData, selectedVerse }: IAudioToolBarProps) {
       const { type, data } = event.data;
       switch (type) {
         case ExttoEditorWebMsgTypes.RecordingFlag: {
-          console.log('data', data);
-
+          // on record stop
+          if (!data.recordingFlag) {
+            setSelectedTake(data.take.replace('_default', ''));
+          }
           // processed vesification data from workspace dir
           setIsRecording(data.recordingFlag);
           break;
@@ -55,7 +55,7 @@ function AudioToolBar({ audioData, selectedVerse }: IAudioToolBarProps) {
       // clean up event listener
       window.removeEventListener('message', handleExtensionPostMessages);
     };
-  }, [audioData]);
+  }, []);
 
   const handleDelete = () => {
     // To check whether current take is default or not & update the take
@@ -72,7 +72,7 @@ function AudioToolBar({ audioData, selectedVerse }: IAudioToolBarProps) {
   const handleTakeClick = (
     e: React.MouseEvent<HTMLElement>,
     take: '1' | '2' | '3',
-    doubleClk = false,
+    doubleClk: boolean = false,
   ) => {
     if (doubleClk) {
       if (audioData && audioData[`take${take}`]) {
@@ -94,8 +94,6 @@ function AudioToolBar({ audioData, selectedVerse }: IAudioToolBarProps) {
     }
   };
 
-  console.log('on single click take selction ==============> ', selectedTake);
-
   return (
     <div
       className="w-[99%] h-7 border border-gray-600 my-1 px-2 py-1 -bottom-10 right-0 self-center
@@ -105,7 +103,11 @@ function AudioToolBar({ audioData, selectedVerse }: IAudioToolBarProps) {
       <div className="flex-1">
         {audioData?.default && !isRecording && (
           <Waveform
-            url={audioData[`take${selectedTake}`]}
+            url={
+              audioData[
+                `take${selectedTake}` as unknown as 'take1' | 'take2' | 'take3'
+              ] as string
+            }
             control={control}
             setControl={setControl}
           />
@@ -118,12 +120,16 @@ function AudioToolBar({ audioData, selectedVerse }: IAudioToolBarProps) {
         <Recorder
           selectedVerse={selectedVerse}
           take={selectedTake}
-          audioPresence={!!audioData?.[`take${selectedTake}`]}
+          audioPresence={
+            !!audioData?.[
+              `take${selectedTake}` as unknown as 'take1' | 'take2' | 'take3'
+            ]
+          }
         />
 
         {control === 'play' ? (
           <button
-            className={`${audioData?.[`take${selectedTake}`] ? 'cursor-pointer' : 'pointer-events-none'}  flex justify-center items-center`}
+            className={`${audioData?.[`take${selectedTake} ` as unknown as 'take1' | 'take2' | 'take3'] ? 'cursor-pointer' : 'pointer-events-none'}  flex justify-center items-center`}
             onClick={() => setControl('pause')}
             title="Pause"
           >
@@ -131,33 +137,33 @@ function AudioToolBar({ audioData, selectedVerse }: IAudioToolBarProps) {
           </button>
         ) : (
           <button
-            className={`${audioData?.[`take${selectedTake}`] ? 'cursor-pointer' : 'pointer-events-none'}  flex justify-center items-center`}
+            className={`${audioData?.[`take${selectedTake}` as unknown as 'take1' | 'take2' | 'take3'] ? 'cursor-pointer' : 'pointer-events-none'}  flex justify-center items-center`}
             onClick={() => setControl('play')}
             title="Play"
           >
             <Play
-              classes={`w-5 h-5 ${audioData?.[`take${selectedTake}`] ? 'stroke-green-400 hover:stroke-green-600' : 'stroke-gray-500 hover:stroke-gray-600 '}`}
+              classes={`w-5 h-5 ${audioData?.[`take${selectedTake}` as unknown as 'take1' | 'take2' | 'take3'] ? 'stroke-green-400 hover:stroke-green-600' : 'stroke-gray-500 hover:stroke-gray-600 '}`}
             />
           </button>
         )}
 
         <button
-          className={`${audioData?.[`take${selectedTake}`] ? 'cursor-pointer' : 'pointer-events-none'}  flex justify-center items-center`}
+          className={`${audioData?.[`take${selectedTake}` as unknown as 'take1' | 'take2' | 'take3'] ? 'cursor-pointer' : 'pointer-events-none'}  flex justify-center items-center`}
           onClick={() => setControl('rewind')}
           title="Rewind"
         >
           <Rewind
-            classes={`w-4 h-4 ${audioData?.[`take${selectedTake}`] ? 'stroke-green-400 hover:stroke-green-600' : 'stroke-gray-500 hover:stroke-gray-600 '}`}
+            classes={`w-4 h-4 ${audioData?.[`take${selectedTake}` as unknown as 'take1' | 'take2' | 'take3'] ? 'stroke-green-400 hover:stroke-green-600' : 'stroke-gray-500 hover:stroke-gray-600 '}`}
           />
         </button>
 
         <button
-          className={`${audioData?.[`take${selectedTake}`] ? 'cursor-pointer' : 'pointer-events-none'}  flex justify-center items-center`}
+          className={`${audioData?.[`take${selectedTake}` as unknown as 'take1' | 'take2' | 'take3'] ? 'cursor-pointer' : 'pointer-events-none'}  flex justify-center items-center`}
           onClick={() => handleDelete()}
           title="Delete"
         >
           <Delete
-            classes={`w-5 h-5 ${audioData?.[`take${selectedTake}`] ? 'stroke-blue-500 hover:stroke-red-600' : 'stroke-gray-500 hover:stroke-gray-600 '}`}
+            classes={`w-5 h-5 ${audioData?.[`take${selectedTake}` as unknown as 'take1' | 'take2' | 'take3'] ? 'stroke-blue-500 hover:stroke-red-600' : 'stroke-gray-500 hover:stroke-gray-600 '}`}
           />
         </button>
       </div>
