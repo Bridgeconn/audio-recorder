@@ -9,7 +9,7 @@ interface ITakeBtn {
   selectedTake: string;
   onClick: (
     e: React.MouseEvent<HTMLElement>,
-    take: string,
+    take: '1' | '2' | '3',
     doubleClk: boolean,
   ) => void;
 }
