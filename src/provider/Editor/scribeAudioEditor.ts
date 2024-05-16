@@ -85,7 +85,7 @@ export class ScribeAudioEditor {
             const audioData = currentVerseData?.audio;
             // To check whether current take is default or not & update the take
             let currentTake = take;
-            if (!audioData) {
+            if (!audioData && !take.includes('default')) {
               currentTake = `${take}_default`;
             }
             const projectDir = await vscode.Uri.joinPath(
@@ -124,6 +124,7 @@ export class ScribeAudioEditor {
                 type: ExttoEditorWebMsgTypes.RecordingFlag,
                 data: {
                   recordingFlag: true,
+                  take: take,
                 },
               });
             }
@@ -139,6 +140,7 @@ export class ScribeAudioEditor {
                 type: ExttoEditorWebMsgTypes.RecordingFlag,
                 data: {
                   recordingFlag: false,
+                  take: take,
                 },
               });
             }
