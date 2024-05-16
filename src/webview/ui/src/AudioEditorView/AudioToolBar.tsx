@@ -129,7 +129,7 @@ function AudioToolBar({ audioData, selectedVerse }: IAudioToolBarProps) {
 
         {control === 'play' ? (
           <button
-            className={`${audioData?.[`take${selectedTake} ` as unknown as 'take1' | 'take2' | 'take3'] ? 'cursor-pointer' : 'pointer-events-none'}  flex justify-center items-center`}
+            className={`${audioData?.[`take${selectedTake}` as unknown as 'take1' | 'take2' | 'take3'] ? 'cursor-pointer' : 'pointer-events-none'}  flex justify-center items-center`}
             onClick={() => setControl('pause')}
             title="Pause"
           >
