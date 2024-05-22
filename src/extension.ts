@@ -12,6 +12,8 @@ import {
   scribeAudioEditorInstance,
 } from './provider/Editor/scribeAudioEditor';
 import { NavigationWebViewProvider } from './provider/Navigation/navigationWebViewProvider';
+import { AudioDeviceWebViewProvide } from './provider/Navigation/audioDeviceWebViewProvide';
+
 import { storageKeys } from './types/storage';
 import { exportAudio } from './utils/exportAudio';
 import { importUSFM } from './utils/importUSFM';
@@ -211,6 +213,7 @@ export function activate(context: vscode.ExtensionContext) {
    * Register Navigation sidebar provider
    */
   context.subscriptions.push(NavigationWebViewProvider.register(context));
+  context.subscriptions.push(AudioDeviceWebViewProvide.register(context));
 
   /**
    * Export Verse Level Command

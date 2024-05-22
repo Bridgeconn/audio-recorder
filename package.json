@@ -53,6 +53,14 @@
           "visibility": "visible",
           "icon": "images/logo.png",
           "contextualTitle": "Audio Explorer"
+        },
+        {
+          "id": "audio-devices-sidebar",
+          "type": "webview",
+          "name": "Select the Device",
+          "visibility": "visible",
+          "icon": "images/logo.png",
+          "contextualTitle": "Select the Device"
         }
       ]
     },
