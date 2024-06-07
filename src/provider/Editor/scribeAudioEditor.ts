@@ -12,6 +12,7 @@ import {
 } from '../../types/editor';
 import * as path from 'path';
 import { startRecord, stopRecord } from './record';
+import axios from 'axios';
 const md5 = require('md5');
 export class ScribeAudioEditor {
   private panel: vscode.WebviewPanel | undefined;
@@ -154,16 +155,27 @@ export class ScribeAudioEditor {
             if (!audioData) {
               currentTake = `${take}_default`;
             }
+            const audioFile = await vscode.Uri.joinPath(
+              this.projectDirectory,
+              'audio',
+              'ingredients',
+              this.currentBC.bookId,
+              this.currentBC.chapter.toString(),
+              `${this.currentBC.chapter}_${verse}_${currentTake}.wav`,
+            );
+            // Call noise removal API
+            axios
+              .get('', {
+                params: {
+                  file: audioFile,
+                },
+              })
+              .then(function (response) {
+                console.log(response);
+              });
+
             // If the recorded audio is default then update the metadata
             if (currentTake.includes('default')) {
-              const audioFile = await vscode.Uri.joinPath(
-                this.projectDirectory,
-                'audio',
-                'ingredients',
-                this.currentBC.bookId,
-                this.currentBC.chapter.toString(),
-                `${this.currentBC.chapter}_${verse}_${currentTake}.wav`,
-              );
               // check if file recorded
               const isFileExist = await vscode.workspace.fs
                 .stat(audioFile)

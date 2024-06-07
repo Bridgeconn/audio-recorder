@@ -162,6 +162,7 @@
   "dependencies": {
     "@vscode/webview-ui-toolkit": "^1.4.0",
     "adm-zip": "^0.5.12",
+    "axios": "^1.7.2",
     "fluent-ffmpeg": "^2.1.2",
     "md5": "^2.3.0",
     "moment": "^2.30.1",
