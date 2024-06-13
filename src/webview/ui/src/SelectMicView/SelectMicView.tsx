@@ -77,7 +77,7 @@ function App() {
         Filter Resources
         <VSCodeDropdown className="w-1/2">
           {devices.map((device) => (
-            <VSCodeOption onClick={() => setMic(device)}>{device}</VSCodeOption>
+            <VSCodeOption onChange={() => setMic(device)}>{device}</VSCodeOption>
           ))}
         </VSCodeDropdown>
       </div>

@@ -1,6 +1,6 @@
 const { spawn } = require('child_process');
 import * as vscode from 'vscode';
-
+import * as os from 'os';
 export const startRecord = (
   outputFilePath: string,
   book: string,
@@ -8,30 +8,64 @@ export const startRecord = (
   verse: number,
   projectName: string,
   userName: string,
+  mic: string
 ) => {
+  // ffmpeg -f dshow -i audio="External Microphone (Synaptics Audio)" NAME1.wav
+  console.log("Selected MIc", mic);
+
   const cmd = 'ffmpeg';
-  const args = [
-    '-f',
-    'alsa', // TODO : this is alsa for linux -> need to fix later for wind and mac
-    '-i',
-    'default',
-    '-acodec',
-    'pcm_s24le', // PCM signed 24-bit little-endian
-    '-ar',
-    '48000',
-    '-ac',
-    '1',
-    '-y', // overwrite file with same name
-    '-metadata',
-    `title=${book} ${chapter}:${verse}`,
-    '-metadata',
-    `artist=${userName}-Scribe Audio Extension`,
-    '-metadata',
-    `album=${projectName}`,
-    '-metadata',
-    `date=${new Date().getFullYear().toString()}`,
-    outputFilePath,
-  ];
+  let args
+  if (os.platform() === 'linux') {
+    console.log("In Linux");
+
+    args = [
+      '-f',
+      'alsa', // TODO : this is alsa for linux -> need to fix later for wind and mac
+      '-i',
+      'default',
+      '-acodec',
+      'pcm_s24le', // PCM signed 24-bit little-endian
+      '-ar',
+      '48000',
+      '-ac',
+      '1',
+      '-y', // overwrite file with same name
+      '-metadata',
+      `title=${book} ${chapter}:${verse}`,
+      '-metadata',
+      `artist=${userName}-Scribe Audio Extension`,
+      '-metadata',
+      `album=${projectName}`,
+      '-metadata',
+      `date=${new Date().getFullYear().toString()}`,
+      outputFilePath,
+    ];
+  } else if (os.platform() === 'win32') {
+    console.log("In windows");
+
+    args = [
+      '-f',
+      'dshow',
+      '-i',
+      `audio=${mic}`,
+      '-acodec',
+      'pcm_s24le', // PCM signed 24-bit little-endian
+      '-ar',
+      '48000',
+      '-ac',
+      '1',
+      '-y', // overwrite file with same name
+      '-metadata',
+      `title=${book} ${chapter}:${verse}`,
+      '-metadata',
+      `artist=${userName}-Scribe Audio Extension`,
+      '-metadata',
+      `album=${projectName}`,
+      '-metadata',
+      `date=${new Date().getFullYear().toString()}`,
+      outputFilePath,
+    ]
+  }
 
   let recordingProcess = spawn(cmd, args);
 

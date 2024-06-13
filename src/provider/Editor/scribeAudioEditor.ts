@@ -77,6 +77,7 @@ export class ScribeAudioEditor {
       this.panel.webview.onDidReceiveMessage(async (e: EditorUItoExtMsg) => {
         switch (e.type) {
           case EditorToExtMSgType.startRecord: {
+            const mic = await this.getGlobalState(storageKeys.selectedMicDevice);
             const { verse, take } = e.data as RecordTriggerData;
             const currentVerseData =
               this.currentChapterVerses?.[0].contents.find(
@@ -115,8 +116,9 @@ export class ScribeAudioEditor {
               this.currentBC.chapter,
               verse,
               this.metadataJson?.identification?.name?.en ||
-                "Scribe Extension's Project",
+              "Scribe Extension's Project",
               this.metadataJson?.meta.generator.userName,
+              mic
             );
             // This is to indicate recording started
             if (this.panel?.webview) {
