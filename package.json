@@ -68,6 +68,16 @@
     "menus": {
       "view/title": [
         {
+          "submenu": "scribe-audio.export",
+          "group": "ScribeAudio"
+        },
+        {
+          "submenu": "scribe-audio.import",
+          "group": "ScribeAudio"
+        }
+      ],
+      "scribe-audio.export": [
+        {
           "command": "scribe-audio.exportVerseLevel",
           "when": "view == audio-explorer-sidebar",
           "group": "ScribeAudio"
@@ -78,6 +88,13 @@
           "group": "ScribeAudio"
         },
         {
+          "command": "scribe-audio.exportChapterProject",
+          "when": "view == audio-explorer-sidebar",
+          "group": "ScribeAudio"
+        }
+      ],
+      "scribe-audio.import": [
+        {
           "command": "scribe-audio.importUSFM",
           "when": "view == audio-explorer-sidebar",
           "group": "ScribeAudio"
@@ -85,6 +102,18 @@
       ],
       "commandPalette": []
     },
+    "submenus": [
+      {
+        "id": "scribe-audio.export",
+        "label": "Export",
+        "icon": "$(something)"
+      },
+      {
+        "id": "scribe-audio.import",
+        "label": "Import",
+        "icon": "$(something)"
+      }
+    ],
     "commands": [
       {
         "command": "scribe-audio.scribeaudio",
@@ -115,12 +144,17 @@
       },
       {
         "command": "scribe-audio.exportVerseLevel",
-        "title": "Export - Verse Level",
+        "title": "Verse Level",
         "category": "ScribeAudio"
       },
       {
         "command": "scribe-audio.exportFullProject",
-        "title": "Export - Full Project",
+        "title": "Full Project",
+        "category": "ScribeAudio"
+      },
+      {
+        "command": "scribe-audio.exportChapterProject",
+        "title": "Chapter Level",
         "category": "ScribeAudio"
       },
       {
@@ -144,6 +178,7 @@
   },
   "devDependencies": {
     "@types/adm-zip": "^0.5.5",
+    "@types/fluent-ffmpeg": "^2.1.24",
     "@types/mocha": "^10.0.6",
     "@types/node": "18.x",
     "@types/uuid": "^9.0.8",

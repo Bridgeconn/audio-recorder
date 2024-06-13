@@ -3,11 +3,19 @@ import { getWorkSpaceFolder } from './common';
 import * as path from 'path';
 import * as fs from 'fs';
 import AdmZip from 'adm-zip';
+import { ExportFormats } from '../types/project';
+import { generateChapterAudios } from './ChapterAudio';
 
 type IExportType = 'verse' | 'chapter' | 'full';
 
 interface IExportAudio {
   type: IExportType;
+}
+
+interface IUserExportOptionStatus {
+  status: boolean;
+  userSelectedBooks: string[];
+  exportFormat: string | undefined;
 }
 
 // function to prompt select dir
@@ -79,6 +87,94 @@ async function exportFilestoTargetPath(
   }
 }
 
+/**
+ * CH level audio processing
+ * CH Level metadata changes
+ */
+async function chapterLevelExportProcessing(
+  metaDataJson: any,
+  userSelections: IUserExportOptionStatus,
+  audioPath: string,
+  projectTargetPath: string,
+) {
+  /**
+   * Folder Structure
+   * Proejct Name
+   *  ingredients
+   *    license
+   *    versification
+   *    bookId
+   *      1.wav (ch.extension)
+   *  timestamp
+   *    bookId_ch.tsv
+   *  metadata
+   */
+
+  //create ingredients dir
+  fs.mkdirSync(path.join(projectTargetPath, 'ingredients'));
+
+  //copy all files in source/audio/ingredients => target/ingredients
+  const files = await vscode.workspace.fs.readDirectory(
+    vscode.Uri.parse(audioPath),
+  );
+  for (const file of files) {
+    const currentSource = path.join(audioPath, file[0]);
+    const currentDestination = path.join(
+      projectTargetPath,
+      'ingredients',
+      file[0],
+    );
+    if (file[1] === 1) {
+      // type is a file
+      fs.copyFileSync(currentSource, currentDestination);
+    }
+  }
+
+  const failedProcess: string[] = [];
+
+  //generate and store CH Audios
+
+  for (const bookId of userSelections.userSelectedBooks) {
+    // read all the chapters in the book dir
+    const chapters = await vscode.workspace.fs.readDirectory(
+      vscode.Uri.parse(path.join(audioPath, bookId)),
+    );
+    for (const chapter of chapters) {
+      try {
+        const sourceChapterPath = path.join(
+          audioPath,
+          bookId.toLocaleUpperCase(),
+          chapter[0],
+        );
+
+        // create target Dir till chapter
+        const targetChapterPath = path.join(
+          projectTargetPath,
+          'ingredients',
+          bookId.toLocaleUpperCase(),
+          chapter[0],
+        );
+        if (!fs.existsSync(targetChapterPath)) {
+          fs.mkdirSync(targetChapterPath);
+        }
+
+        await generateChapterAudios(
+          sourceChapterPath,
+          targetChapterPath,
+          chapter[0],
+        );
+        // TODO: check R&D code of merge and conversion
+      } catch (err) {
+        console.log(`failed to merge : ${bookId} : ${chapter}`, err);
+        failedProcess.push(`${bookId}_${chapter}`);
+      }
+    }
+  }
+
+  //
+  //generate timestamp
+}
+
 async function processExportingAudio(
   type: IExportType,
   text1Path: string,
@@ -86,6 +182,7 @@ async function processExportingAudio(
   audioPath: string,
   metaDataJson: any,
   _projectName: string,
+  userSelections: IUserExportOptionStatus,
 ) {
   try {
     // common steps
@@ -94,8 +191,8 @@ async function processExportingAudio(
       fs.mkdirSync(projectTargetPath);
     }
 
-    // copy text1 to target
-    if (fs.existsSync(text1Path)) {
+    // copy text1 to target => not for CH Lev Export
+    if (fs.existsSync(text1Path) && type !== 'chapter') {
       await vscode.workspace.fs.copy(
         vscode.Uri.parse(text1Path),
         vscode.Uri.parse(path.join(projectTargetPath, 'text-1')),
@@ -164,6 +261,13 @@ async function processExportingAudio(
           fs.copyFileSync(currentSource, currentDestination);
         }
       }
+    } else if (type === 'chapter') {
+      await chapterLevelExportProcessing(
+        metaDataJson,
+        userSelections,
+        audioPath,
+        projectTargetPath,
+      );
     } else {
       console.error('Type not supported yet');
       throw new Error('Type not supported yet');
@@ -195,6 +299,66 @@ async function processExportingAudio(
     vscode.window.showErrorMessage(
       'Project Export Failed. Please check the folder have same content.',
     );
+  }
+}
+
+/**
+ * dialog and options selection modal for Chapter Level
+ */
+export async function triggerChapterLevelExportModal(audioPath: string) {
+  try {
+    console.log('triggered CH Level Modal function =========');
+    const avaialbeBooksInDir: string[] = [];
+
+    // show quick pick to select Export Audio Type
+    const audioFormatPicker = await vscode.window.showQuickPick(
+      Object.values(ExportFormats),
+      {
+        placeHolder: 'Select Export Format',
+      },
+    );
+    if (!audioFormatPicker) {
+      return false;
+    }
+
+    // show quick pick to select multi selection - show available books with audio - reuturn [book1, book2]
+    // read folders from source/audio/ingredients -> only folders with audio will be there and the folder name will be BookCode
+    const avaialbeBooks = await vscode.workspace.fs.readDirectory(
+      vscode.Uri.parse(audioPath),
+    );
+
+    for (const file of avaialbeBooks) {
+      // file => [DiretoryName, fileType]
+      //  fileType : 1 => file , 2 => dir
+      if (file[1] === 2) {
+        avaialbeBooksInDir.push(file[0]);
+      }
+    }
+
+    // No books available to export => auto abort export
+    if (avaialbeBooks.length === 0) {
+      return false;
+    }
+
+    // quick pick for multi select books
+    // show quick pick to select Export Audio Type
+    const userSelectedBooks = await vscode.window.showQuickPick(
+      avaialbeBooksInDir,
+      {
+        placeHolder: 'Select Books To Export',
+        canPickMany: true,
+      },
+    );
+    if (!userSelectedBooks) {
+      return false;
+    }
+
+    return { status: true, userSelectedBooks, exportFormat: audioFormatPicker };
+  } catch (err) {
+    // return false to stop export fucntion : in case of error
+    console.error('Err in CH Lev Options seelction : ', err);
+
+    return false;
   }
 }
 
@@ -246,6 +410,16 @@ export async function exportAudio({ type }: IExportAudio) {
 
   const _projectName = metaDataJson.identification.name.en;
 
+  // chapter Level Audio Specific option selection
+  const userSelections: boolean | IUserExportOptionStatus =
+    await triggerChapterLevelExportModal(audioPath);
+  if (!userSelections || userSelections.userSelectedBooks.length === 0) {
+    vscode.window.showErrorMessage(
+      'No Audio Avaiable to Export or No books selected',
+    );
+    return;
+  }
+
   // prompt to select Dir to export
   const exportDirPath = await selectDirectory();
 
@@ -290,6 +464,7 @@ export async function exportAudio({ type }: IExportAudio) {
             audioPath,
             metaDataJson,
             _projectName,
+            userSelections,
           );
         } else {
           vscode.window.showInformationMessage('Project Export Aborted');
@@ -305,6 +480,7 @@ export async function exportAudio({ type }: IExportAudio) {
       audioPath,
       metaDataJson,
       _projectName,
+      userSelections,
     );
   }
 }

@@ -14,3 +14,8 @@ export interface AudioProjectCreationDetails {
   versification: versification | undefined;
   currentScope: string;
 }
+
+export enum ExportFormats {
+  WAV = 'wav',
+  MP3 = 'mp3',
+}
